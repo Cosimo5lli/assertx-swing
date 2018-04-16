@@ -1,9 +1,17 @@
-grammar org.assertx.swing.AssertXSwing with org.eclipse.xtext.common.Terminals
+grammar org.assertx.swing.AssertXSwing with org.eclipse.xtext.xbase.Xbase
 
 generate assertXSwing "http://www.assertx.org/swing/AssertXSwing"
 
-Model:
-	greetings+=Greeting*;
-	
-Greeting:
-	'Hello' name=ID '!';
+AXSTestCase:
+	'testing' testedTypeRef=JvmParameterizedTypeReference ('as' fieldName=ID)?
+	settings=AXSSettings?
+	tests+=AXSTestMethod*
+;
+
+AXSTestMethod:
+	'test' name=STRING block=XBlockExpression
+;
+
+AXSSettings:
+	'settings' block=XBlockExpression
+;
