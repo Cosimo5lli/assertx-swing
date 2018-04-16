@@ -1,0 +1,9 @@
+grammar org.assertx.swing.AssertXSwing with org.eclipse.xtext.common.Terminals
+
+generate assertXSwing "http://www.assertx.org/swing/AssertXSwing"
+
+Model:
+	greetings+=Greeting*;
+	
+Greeting:
+	'Hello' name=ID '!';
