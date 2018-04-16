@@ -8,5 +8,25 @@ Bundle-ActivationPolicy: lazy
 Require-Bundle: org.eclipse.xtext,
  org.eclipse.xtext.xbase,
  org.eclipse.equinox.common;bundle-version="3.5.0",
- org.assertj.swing;bundle-version="3.8.0"
+ org.assertj.swing;bundle-version="3.8.0",
+ org.eclipse.emf.ecore,
+ org.eclipse.xtext.common.types,
+ org.eclipse.xtext.xbase.lib;bundle-version="2.13.0",
+ org.antlr.runtime,
+ org.objectweb.asm;bundle-version="[5.0.1,6.0.0)";resolution:=optional,
+ org.eclipse.xtext.util,
+ org.eclipse.emf.common,
+ org.eclipse.xtend.lib;bundle-version="2.13.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Export-Package: org.assertx.swing.serializer,
+ org.assertx.swing.scoping,
+ org.assertx.swing,
+ org.assertx.swing.assertXSwing.util,
+ org.assertx.swing.assertXSwing,
+ org.assertx.swing.parser.antlr,
+ org.assertx.swing.parser.antlr.internal,
+ org.assertx.swing.validation,
+ org.assertx.swing.jvmmodel,
+ org.assertx.swing.services,
+ org.assertx.swing.assertXSwing.impl
+Import-Package: org.apache.log4j
