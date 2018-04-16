@@ -1,0 +1,18 @@
+*.class
+bin/
+*~
+logs.zip
+*.orig
+*.java._trace
+*.smap
+
+src-gen/
+xtend-gen/
+emf-gen/
+
+# for Maven builds
+target
+
+# for Gradle builds
+build
+.gradle
