@@ -2,16 +2,15 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: AssertJ Swing
 Bundle-SymbolicName: org.assertj.swing
-Bundle-Version: 3.8.0.qualifier
+Bundle-Version: 1.0.0.qualifier
 Automatic-Module-Name: org.assertj.swing
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Bundle-ClassPath: lib/assertj-core-3.8.0.jar,
+Bundle-ClassPath: lib/fest-reflect-1.4.1.jar,
+ lib/fest-util-1.2.5.jar,
+ lib/assertj-core-3.8.0.jar,
  lib/assertj-swing-3.8.0-sources.jar,
  lib/assertj-swing-3.8.0.jar,
  lib/assertj-swing-junit-3.8.0.jar,
- lib/fest-reflect-1.4.1.jar,
- lib/fest-util-1.2.5.jar,
- lib/hamcrest-core-1.3.jar,
  .
 Export-Package: org.assertj.core.api,
  org.assertj.core.api.exception,
@@ -96,4 +95,17 @@ Export-Package: org.assertj.core.api,
  org.assertj.swing.testing,
  org.assertj.swing.text,
  org.assertj.swing.timing,
- org.assertj.swing.util
+ org.assertj.swing.util,
+ org.fest.reflect.beanproperty,
+ org.fest.reflect.constructor,
+ org.fest.reflect.core,
+ org.fest.reflect.exception,
+ org.fest.reflect.field,
+ org.fest.reflect.field.decorator,
+ org.fest.reflect.innerclass,
+ org.fest.reflect.method,
+ org.fest.reflect.reference,
+ org.fest.reflect.type,
+ org.fest.reflect.util,
+ org.fest.util
+Require-Bundle: org.hamcrest.core;bundle-version="1.3.0"
