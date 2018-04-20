@@ -4,14 +4,29 @@
 package org.assertx.swing.jvmmodel
 
 import com.google.inject.Inject
+import org.assertj.swing.core.BasicRobot
+import org.assertj.swing.core.Robot
+import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
+import org.assertj.swing.edt.GuiActionRunner
+import org.assertj.swing.fixture.FrameFixture
 import org.assertx.swing.assertXSwing.AXSTestCase
+import org.assertx.swing.assertXSwing.AXSTestMethod
+import org.eclipse.xtext.common.types.JvmDeclaredType
+import org.eclipse.xtext.common.types.JvmGenericType
+import org.eclipse.xtext.common.types.JvmVisibility
 import org.eclipse.xtext.xbase.jvmmodel.AbstractModelInferrer
 import org.eclipse.xtext.xbase.jvmmodel.IJvmDeclaredTypeAcceptor
 import org.eclipse.xtext.xbase.jvmmodel.JvmTypesBuilder
+import org.junit.After
+import org.junit.Before
+import org.junit.BeforeClass
+import org.junit.Test
+import org.junit.runner.RunWith
+import org.junit.runner.JUnitCore
 
 /**
  * <p>Infers a JVM model from the source model.</p> 
- *
+ * 
  * <p>The JVM model should contain all elements that would appear in the Java code 
  * which is generated from the source model. Other models link against the JVM model rather than the source model.</p>     
  */
@@ -28,11 +43,11 @@ class AssertXSwingJvmModelInferrer extends AbstractModelInferrer {
 	 * 
 	 * @param element
 	 *            the model to create one or more
-	 *            {@link org.eclipse.xtext.common.types.JvmDeclaredType declared
+	 *            {@link JvmDeclaredType declared
 	 *            types} from.
 	 * @param acceptor
 	 *            each created
-	 *            {@link org.eclipse.xtext.common.types.JvmDeclaredType type}
+	 *            {@link JvmDeclaredType type}
 	 *            without a container should be passed to the acceptor in order
 	 *            get attached to the current resource. The acceptor's
 	 *            {@link IJvmDeclaredTypeAcceptor#accept(org.eclipse.xtext.common.types.JvmDeclaredType)
@@ -47,16 +62,75 @@ class AssertXSwingJvmModelInferrer extends AbstractModelInferrer {
 	 */
 	def dispatch void infer(AXSTestCase element, IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase) {
 		// Here you explain how your model is mapped to Java elements, by writing the actual translation code.
-		
-		// An implementation for the initial hello world example could look like this:
-// 		acceptor.accept(element.toClass("my.company.greeting.MyGreetings")) [
-// 			for (greeting : element.greetings) {
-// 				members += greeting.toMethod("hello" + greeting.name, typeRef(String)) [
-// 					body = '''
-//						return "Hello «greeting.name»";
-//					'''
-//				]
-//			}
-//		]
+		val sutClass = element.testedTypeRef.type
+		val sutClassName = sutClass.simpleName
+		acceptor.accept(element.toClass(sutClassName + 'Test')) [
+//			val ann = annotationRef(RunWith, typeRef(JUnitCore).qualifiedName)
+//			val ann = toAnnotation(RunWith, typeRef(JUnitCore))
+//			val ann = annotationRef('org.junit.runner.RunWith(org.junit.runner.JUnitCore.class)')
+//			val ann = annotationRef(RunWith)
+//			ann.values += 
+//			annotations += ann
+//			ann.values += typeRef(JUnitCore)
+			members += element.toField(element.SUTFieldName, typeRef(FrameFixture))
+			members += element.toMethod('beforeClass', typeRef(Void.TYPE)) [
+				annotations += annotationRef(BeforeClass)
+				body = '''«typeRef(FailOnThreadViolationRepaintManager)».install();'''
+			]
+
+			generateSettingsMethod(element)
+
+			members += element.toMethod('setup', typeRef(Void.TYPE)) [
+				annotations += annotationRef(Before)
+				body = '''
+					«element.generateSettingsSection»
+					«typeRef(sutClass)» frame = «typeRef(GuiActionRunner)».execute(() -> new «typeRef(sutClass)»());
+					this.«element.SUTFieldName» = new «typeRef(FrameFixture)»(«if(element.settings !== null) 'robot, ' else ''»frame);
+				'''
+			]
+			
+			members += element.toMethod('cleanUp', typeRef(Void.TYPE)) [
+				annotations+=annotationRef(After)
+				body = '''
+				this.«element.SUTFieldName».cleanUp();
+				'''
+			]
+			
+			for(test : element.tests){
+				members += element.toMethod(test.camelCaseName, typeRef(Void.TYPE))[
+					annotations += annotationRef(Test)
+					body = test.block
+				]
+			}
+		]
+	}
+
+	def getCamelCaseName(AXSTestMethod t){
+		val ccn = t.name.replaceAll('[^a-zA-Z0-9$_ ]', '').split(' ').map[toFirstUpper].join.toFirstLower
+		if(ccn.matches('[a-z$_][a-zA-Z0-9$_]*')) ccn
+		else '_' + ccn
+	}
+
+	def private generateSettingsSection(AXSTestCase tc) {
+		if (tc.settings !== null) {
+			'''
+				«typeRef(Robot)» robot = «typeRef(BasicRobot)».robotWithCurrentAwtHierarchy();
+				this.doSettings(robot);
+			'''
+		} else ''
+	}
+
+	def private generateSettingsMethod(JvmGenericType it, AXSTestCase tc) {
+		if (tc.settings !== null) {
+			members += tc.toMethod('doSettings', typeRef(Void.TYPE)) [
+				visibility = JvmVisibility.PRIVATE
+				parameters += toParameter('robot', typeRef(Robot))
+				body = tc.settings.block
+			]
+		}
+	}
+
+	def getSUTFieldName(AXSTestCase tc) {
+		tc.fieldName ?: 'window'
 	}
 }
