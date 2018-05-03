@@ -3,9 +3,15 @@
  */
 package org.assertx.swing
 
+import org.eclipse.xtext.parser.antlr.SyntaxErrorMessageProvider
+import org.assertx.swing.validation.AssertXSwingSyntaxErrorMessageProvider
 
 /**
  * Use this class to register components to be used at runtime / without the Equinox extension registry.
  */
 class AssertXSwingRuntimeModule extends AbstractAssertXSwingRuntimeModule {
+	
+	def Class<? extends SyntaxErrorMessageProvider> bindSyntaxErrorMessageProvider() {
+		return AssertXSwingSyntaxErrorMessageProvider
+	}
 }

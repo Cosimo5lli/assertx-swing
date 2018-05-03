@@ -3,6 +3,14 @@
  */
 package org.assertx.swing.validation
 
+import com.google.common.collect.HashMultimap
+import org.assertx.swing.assertXSwing.AXSTestCase
+import org.eclipse.xtext.validation.Check
+import org.assertx.swing.assertXSwing.AssertXSwingPackage
+import javax.swing.JFrame
+import javax.swing.JDialog
+import javax.swing.JWindow
+import org.assertx.swing.assertXSwing.AXSTestMethod
 
 /**
  * This class contains custom validation rules. 
@@ -11,15 +19,45 @@ package org.assertx.swing.validation
  */
 class AssertXSwingValidator extends AbstractAssertXSwingValidator {
 	
-//	public static val INVALID_NAME = 'invalidName'
-//
-//	@Check
-//	def checkGreetingStartsWithCapital(Greeting greeting) {
-//		if (!Character.isUpperCase(greeting.name.charAt(0))) {
-//			warning('Name should start with a capital', 
-//					AssertXSwingPackage.Literals.GREETING__NAME,
-//					INVALID_NAME)
-//		}
-//	}
+	static val ISSUE_CODE_PREFIX = 'org.assertx.swing.'
+	public static val SAME_NAME_METHODS = ISSUE_CODE_PREFIX + 'SameNameMethods'
+	public static val UNTESTABLE_TYPE = ISSUE_CODE_PREFIX + 'UntestableType'
+	public static val NULL_METHOD_NAME = ISSUE_CODE_PREFIX + 'NullMethodName'
 	
+	@Check
+	def void checkMethodNamesAreUnique(AXSTestCase tc){
+		val tests = HashMultimap.create
+		
+		for (test : tc.tests)
+			tests.put(test.name, test)
+		
+		for (e : tests.asMap.entrySet){
+			val collisions = e.value
+			if(collisions.size > 1){
+				for(c : collisions){
+					warning("Duplicate method '" + c.name + "': methods should use different and explanatory names",
+						c,	AssertXSwingPackage.eINSTANCE.AXSTestMethod_Name,
+						SAME_NAME_METHODS
+					)
+				}
+			}
+		}
+	}
+	
+	@Check
+	def void checkTestedClassMustBeSubclassOfJFrame(AXSTestCase tc){
+		val clazz = tc.testedTypeRef.toLightweightTypeReference
+		if( !(clazz.isSubtypeOf(JFrame) || clazz.isSubtypeOf(JDialog) || clazz.isSubtypeOf(JWindow)) )
+			error("Untestable type: the class under test must be a subclass of either 'javax.swing.JFrame', 'javax.swing.JDialog' or 'javax.swing.JWindow'",
+				AssertXSwingPackage.eINSTANCE.AXSTestCase_TestedTypeRef,
+				UNTESTABLE_TYPE	)
+	}
+	
+//	@Check
+	def void checkNullMethodNames(AXSTestMethod t){
+		if(t.name === null)
+			error('Missing method name after "test" keyword',
+			t, null, NULL_METHOD_NAME)
+			
+	}
 }
