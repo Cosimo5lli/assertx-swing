@@ -6,11 +6,12 @@ package org.assertx.swing.jvmmodel
 import com.google.inject.Inject
 import org.assertj.swing.core.BasicRobot
 import org.assertj.swing.core.Robot
+import org.assertj.swing.core.Settings
 import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
 import org.assertj.swing.edt.GuiActionRunner
 import org.assertj.swing.fixture.FrameFixture
+import org.assertx.swing.AssertXSwingUtil
 import org.assertx.swing.assertXSwing.AXSTestCase
-import org.assertx.swing.assertXSwing.AXSTestMethod
 import org.eclipse.xtext.common.types.JvmDeclaredType
 import org.eclipse.xtext.common.types.JvmGenericType
 import org.eclipse.xtext.common.types.JvmVisibility
@@ -21,8 +22,6 @@ import org.junit.After
 import org.junit.Before
 import org.junit.BeforeClass
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.junit.runner.JUnitCore
 
 /**
  * <p>Infers a JVM model from the source model.</p> 
@@ -36,7 +35,8 @@ class AssertXSwingJvmModelInferrer extends AbstractModelInferrer {
 	 * convenience API to build and initialize JVM types and their members.
 	 */
 	@Inject extension JvmTypesBuilder
-
+	
+	@Inject	extension AssertXSwingUtil
 	/**
 	 * The dispatch method {@code infer} is called for each instance of the
 	 * given element's type that is contained in a resource.
@@ -62,19 +62,13 @@ class AssertXSwingJvmModelInferrer extends AbstractModelInferrer {
 	 */
 	def dispatch void infer(AXSTestCase element, IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase) {
 		// Here you explain how your model is mapped to Java elements, by writing the actual translation code.
-		val sutClass = element.testedTypeRef.type
-		val sutClassName = sutClass.simpleName
-		acceptor.accept(element.toClass(sutClassName + 'Test')) [
-//			val ann = annotationRef(RunWith, typeRef(JUnitCore).qualifiedName)
-//			val ann = toAnnotation(RunWith, typeRef(JUnitCore))
-//			val ann = annotationRef('org.junit.runner.RunWith(org.junit.runner.JUnitCore.class)')
-//			val ann = annotationRef(RunWith)
-//			ann.values += 
-//			annotations += ann
-//			ann.values += typeRef(JUnitCore)
-			members += element.toField(element.SUTFieldName, typeRef(FrameFixture))
+		val testedClass = element?.testedTypeRef?.type
+		val testedClassName = testedClass?.simpleName
+		acceptor.accept(element.toClass(testedClassName + 'Test')) [
+			members += element.toField(element.checkedFieldName, typeRef(FrameFixture))
 			members += element.toMethod('beforeClass', typeRef(Void.TYPE)) [
 				annotations += annotationRef(BeforeClass)
+				static = true
 				body = '''«typeRef(FailOnThreadViolationRepaintManager)».install();'''
 			]
 
@@ -83,21 +77,24 @@ class AssertXSwingJvmModelInferrer extends AbstractModelInferrer {
 			members += element.toMethod('setup', typeRef(Void.TYPE)) [
 				annotations += annotationRef(Before)
 				body = '''
-					«element.generateSettingsSection»
-					«typeRef(sutClass)» frame = «typeRef(GuiActionRunner)».execute(() -> new «typeRef(sutClass)»());
-					this.«element.SUTFieldName» = new «typeRef(FrameFixture)»(«if(element.settings !== null) 'robot, ' else ''»frame);
+					«IF element.settings !== null»
+						«typeRef(Robot)» robot = «typeRef(BasicRobot)».robotWithCurrentAwtHierarchy();
+						this.customizeSettings(robot.settings());
+					«ENDIF»
+					«typeRef(testedClass)» frame = «typeRef(GuiActionRunner)».execute(() -> new «typeRef(testedClass)»());
+					this.«element.checkedFieldName» = new «typeRef(FrameFixture)»(«if(element.settings !== null) 'robot, ' else ''»frame);
 				'''
 			]
-			
+
 			members += element.toMethod('cleanUp', typeRef(Void.TYPE)) [
-				annotations+=annotationRef(After)
+				annotations += annotationRef(After)
 				body = '''
-				this.«element.SUTFieldName».cleanUp();
+					this.«element.checkedFieldName».cleanUp();
 				'''
 			]
-			
-			for(test : element.tests){
-				members += element.toMethod(test.camelCaseName, typeRef(Void.TYPE))[
+
+			for (test : element.tests) {
+				members += test.toMethod(test.camelCaseName, typeRef(Void.TYPE)) [
 					annotations += annotationRef(Test)
 					body = test.block
 				]
@@ -105,32 +102,14 @@ class AssertXSwingJvmModelInferrer extends AbstractModelInferrer {
 		]
 	}
 
-	def getCamelCaseName(AXSTestMethod t){
-		val ccn = t.name.replaceAll('[^a-zA-Z0-9$_ ]', '').split(' ').map[toFirstUpper].join.toFirstLower
-		if(ccn.matches('[a-z$_][a-zA-Z0-9$_]*')) ccn
-		else '_' + ccn
-	}
-
-	def private generateSettingsSection(AXSTestCase tc) {
-		if (tc.settings !== null) {
-			'''
-				«typeRef(Robot)» robot = «typeRef(BasicRobot)».robotWithCurrentAwtHierarchy();
-				this.doSettings(robot);
-			'''
-		} else ''
-	}
-
 	def private generateSettingsMethod(JvmGenericType it, AXSTestCase tc) {
-		if (tc.settings !== null) {
-			members += tc.toMethod('doSettings', typeRef(Void.TYPE)) [
+		val settings = tc.settings
+		if (settings !== null) {
+			members += settings.toMethod('customizeSettings', typeRef(Void.TYPE)) [
 				visibility = JvmVisibility.PRIVATE
-				parameters += toParameter('robot', typeRef(Robot))
-				body = tc.settings.block
+				parameters += settings.toParameter('it', typeRef(Settings))
+				body = settings.block
 			]
 		}
-	}
-
-	def getSUTFieldName(AXSTestCase tc) {
-		tc.fieldName ?: 'window'
 	}
 }

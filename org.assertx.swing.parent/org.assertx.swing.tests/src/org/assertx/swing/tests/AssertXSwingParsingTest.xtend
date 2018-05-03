@@ -99,4 +99,14 @@ class AssertXSwingParsingTest {
 			(tests.head.block as XBlockExpression).expressions.empty.assertFalse
 		]
 	}
+	
+	@Test
+	def void testCustomFieldName(){
+		'''
+		testing javax.swing.JFrame as custom
+		'''.parse =>[
+			fieldName.assertNotNull
+			'custom'.assertEquals(fieldName)
+		]
+	}
 }
