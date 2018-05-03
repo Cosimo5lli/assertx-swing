@@ -8,23 +8,95 @@ import org.assertx.swing.assertXSwing.AXSTestCase
 import org.eclipse.xtext.testing.InjectWith
 import org.eclipse.xtext.testing.XtextRunner
 import org.eclipse.xtext.testing.util.ParseHelper
-import org.junit.Assert
+import static  extension org.junit.Assert.*
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.eclipse.xtext.xbase.XBlockExpression
+import org.eclipse.xtext.xbase.XVariableDeclaration
+import org.eclipse.xtext.xbase.XStringLiteral
 
 @RunWith(XtextRunner)
 @InjectWith(AssertXSwingInjectorProvider)
 class AssertXSwingParsingTest {
-	@Inject
-	ParseHelper<AXSTestCase> parseHelper
+	
+	@Inject extension ParseHelper<AXSTestCase>
 	
 	@Test
-	def void loadModel() {
-		val result = parseHelper.parse('''
-			Hello Xtext!
-		''')
-		Assert.assertNotNull(result)
-		val errors = result.eResource.errors
-		Assert.assertTrue('''Unexpected errors: «errors.join(", ")»''', errors.isEmpty)
+	def void testRecognizedTypeRef() {
+		'''
+		testing javax.swing.JFrame
+		'''.parse => ['JFrame'.assertEquals(testedTypeRef.simpleName)]
+	}
+	
+	@Test
+	def void testEmptyTestCase(){
+		'''
+		testing javax.swing.JFrame
+		'''.parse => [
+			settings.assertNull
+			tests.empty.assertTrue
+		]
+	}
+	
+	@Test
+	def void testSettingsSection(){
+		'''
+		testing javax.swing.JFrame
+		
+		settings {
+			val s = 'Hello'
+		}
+		'''.parse => [
+			settings.assertNotNull()
+			val block = (settings.block as XBlockExpression)
+			val valDec = (block.expressions.head as XVariableDeclaration)
+			's'.assertEquals(valDec.simpleName)
+			'Hello'.assertEquals((valDec.right as XStringLiteral).value)
+		]
+	}
+	
+	@Test
+	def void testEmptyMethodDeclaration(){
+		'''
+		testing javax.swing.JFrame
+		
+		test 'Empty test method' {
+			
+		}
+		'''.parse => [
+			'Empty test method'.assertEquals(tests.head.name)
+			(tests.head.block as XBlockExpression).expressions.empty.assertTrue
+		]
+	}
+	
+	@Test
+	def void testNonEmptyMethodDeclaration(){
+		'''
+		testing javax.swing.JFrame
+		
+		test 'A test method' {
+			val s = 'World'
+		}
+		'''.parse => [
+			'A test method'.assertEquals(tests.head.name)
+			(tests.head.block as XBlockExpression).expressions.empty.assertFalse
+		]
+	}
+	
+	@Test
+	def void testUnnamedMethod(){
+		'''
+		testing javax.swing.JFrame
+		
+		test {
+			val n = null
+		}
+		'''.parse => [
+			'JFrame'.assertEquals(testedTypeRef.simpleName)
+			1.assertEquals(tests.length)
+			tests.head.name.assertNull
+			tests.head.assertNotNull()
+			(tests.head.block as XBlockExpression).expressions.empty.assertFalse
+		]
 	}
 }

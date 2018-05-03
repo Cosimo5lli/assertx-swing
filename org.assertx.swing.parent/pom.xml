@@ -22,6 +22,8 @@
 		<module>org.assertx.swing.repository</module>
 		<module>org.assertx.swing.tests</module>
 		<module>org.assertx.swing.ui.tests</module>
+		<module>org.assertj.swing</module>
+		<module>org.assertx.swing.tests.examplewindow</module>
 	</modules>
 	<build>
 		<plugins>
