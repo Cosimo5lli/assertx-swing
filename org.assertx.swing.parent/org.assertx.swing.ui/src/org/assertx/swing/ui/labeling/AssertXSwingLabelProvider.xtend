@@ -4,7 +4,10 @@
 package org.assertx.swing.ui.labeling
 
 import com.google.inject.Inject
+import org.assertx.swing.assertXSwing.AXSSettings
+import org.assertx.swing.assertXSwing.AXSTestMethod
 import org.eclipse.emf.edit.ui.provider.AdapterFactoryLabelProvider
+import org.eclipse.jface.viewers.StyledString
 import org.eclipse.xtext.xbase.ui.labeling.XbaseLabelProvider
 
 /**
@@ -18,14 +21,14 @@ class AssertXSwingLabelProvider extends XbaseLabelProvider {
 	new(AdapterFactoryLabelProvider delegate) {
 		super(delegate);
 	}
-
-	// Labels and icons can be computed like this:
 	
-//	def text(Greeting ele) {
-//		'A greeting to ' + ele.name
-//	}
-//
-//	def image(Greeting ele) {
-//		'Greeting.gif'
-//	}
+	def text(AXSTestMethod tm){
+		new StyledString(tm.name).append(
+			new StyledString(': Test', StyledString.DECORATIONS_STYLER)
+		)
+	}
+	
+	def text(AXSSettings s){
+		new StyledString('Settings', StyledString.DECORATIONS_STYLER)
+	}
 }
