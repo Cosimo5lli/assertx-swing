@@ -4,13 +4,11 @@
 package org.assertx.swing.validation
 
 import com.google.common.collect.HashMultimap
-import org.assertx.swing.assertXSwing.AXSTestCase
-import org.eclipse.xtext.validation.Check
-import org.assertx.swing.assertXSwing.AssertXSwingPackage
-import javax.swing.JFrame
 import javax.swing.JDialog
-import javax.swing.JWindow
-import org.assertx.swing.assertXSwing.AXSTestMethod
+import javax.swing.JFrame
+import org.assertx.swing.assertXSwing.AXSTestCase
+import org.assertx.swing.assertXSwing.AssertXSwingPackage
+import org.eclipse.xtext.validation.Check
 
 /**
  * This class contains custom validation rules. 
@@ -47,17 +45,9 @@ class AssertXSwingValidator extends AbstractAssertXSwingValidator {
 	@Check
 	def void checkTestedClassMustBeSubclassOfJFrame(AXSTestCase tc){
 		val clazz = tc.testedTypeRef.toLightweightTypeReference
-		if( !(clazz.isSubtypeOf(JFrame) || clazz.isSubtypeOf(JDialog) || clazz.isSubtypeOf(JWindow)) )
-			error("Untestable type: the class under test must be a subclass of either 'javax.swing.JFrame', 'javax.swing.JDialog' or 'javax.swing.JWindow'",
+		if( !(clazz.isSubtypeOf(JFrame) || clazz.isSubtypeOf(JDialog)) )
+			error("Untestable type: the class under test must be a subclass of either 'javax.swing.JFrame' or 'javax.swing.JDialog'",
 				AssertXSwingPackage.eINSTANCE.AXSTestCase_TestedTypeRef,
 				UNTESTABLE_TYPE	)
-	}
-	
-//	@Check
-	def void checkNullMethodNames(AXSTestMethod t){
-		if(t.name === null)
-			error('Missing method name after "test" keyword',
-			t, null, NULL_METHOD_NAME)
-			
 	}
 }

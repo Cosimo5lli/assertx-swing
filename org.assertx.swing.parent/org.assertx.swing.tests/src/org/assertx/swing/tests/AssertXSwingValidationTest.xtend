@@ -90,7 +90,7 @@ class AssertXSwingValidationTest {
 		input.parse.assertError(AssertXSwingPackage.eINSTANCE.AXSTestCase,
 			AssertXSwingValidator.UNTESTABLE_TYPE,
 			input.indexOf(wrongClass), wrongClass.length,
-			"Untestable type: the class under test must be a subclass of either 'javax.swing.JFrame', 'javax.swing.JDialog' or 'javax.swing.JWindow'"
+			"Untestable type: the class under test must be a subclass of either 'javax.swing.JFrame' or 'javax.swing.JDialog'"
 		)
 	}
 	

@@ -9,8 +9,7 @@ import org.assertj.swing.core.Robot
 import org.assertj.swing.core.Settings
 import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
 import org.assertj.swing.edt.GuiActionRunner
-import org.assertj.swing.fixture.FrameFixture
-import org.assertx.swing.AssertXSwingUtil
+import org.assertx.swing.AssertXSwingUtils
 import org.assertx.swing.assertXSwing.AXSTestCase
 import org.eclipse.xtext.common.types.JvmDeclaredType
 import org.eclipse.xtext.common.types.JvmGenericType
@@ -36,7 +35,7 @@ class AssertXSwingJvmModelInferrer extends AbstractModelInferrer {
 	 */
 	@Inject extension JvmTypesBuilder
 	
-	@Inject	extension AssertXSwingUtil
+	@Inject	extension AssertXSwingUtils
 	/**
 	 * The dispatch method {@code infer} is called for each instance of the
 	 * given element's type that is contained in a resource.
@@ -63,9 +62,10 @@ class AssertXSwingJvmModelInferrer extends AbstractModelInferrer {
 	def dispatch void infer(AXSTestCase element, IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase) {
 		// Here you explain how your model is mapped to Java elements, by writing the actual translation code.
 		val testedClass = element?.testedTypeRef?.type
-		val testedClassName = testedClass?.simpleName
-		acceptor.accept(element.toClass(testedClassName + 'Test')) [
-			members += element.toField(element.checkedFieldName, typeRef(FrameFixture))
+		val testingClassName = element.eResource.URI.trimFileExtension.lastSegment
+		val fixtureType =  element.fieldType
+		acceptor.accept(element.toClass(testingClassName)) [
+			members += element.toField(element.checkedFieldName, typeRef(fixtureType))
 			members += element.toMethod('beforeClass', typeRef(Void.TYPE)) [
 				annotations += annotationRef(BeforeClass)
 				static = true
@@ -82,7 +82,7 @@ class AssertXSwingJvmModelInferrer extends AbstractModelInferrer {
 						this.customizeSettings(robot.settings());
 					«ENDIF»
 					«typeRef(testedClass)» frame = «typeRef(GuiActionRunner)».execute(() -> new «typeRef(testedClass)»());
-					this.«element.checkedFieldName» = new «typeRef(FrameFixture)»(«if(element.settings !== null) 'robot, ' else ''»frame);
+					this.«element.checkedFieldName» = new «typeRef(fixtureType)»(«if(element.settings !== null) 'robot, ' else ''»frame);
 				'''
 			]
 

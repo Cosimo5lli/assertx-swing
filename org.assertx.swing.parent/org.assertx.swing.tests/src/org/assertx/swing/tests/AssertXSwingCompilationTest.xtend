@@ -39,7 +39,7 @@ class AssertXSwingCompilationTest {
 			import org.junit.BeforeClass;
 			
 			@SuppressWarnings("all")
-			public class ExampleJFrameTest {
+			public class MyFile {
 			  private FrameFixture window;
 			  
 			  @BeforeClass
@@ -82,7 +82,7 @@ class AssertXSwingCompilationTest {
 			import org.junit.BeforeClass;
 			
 			@SuppressWarnings("all")
-			public class ExampleJFrameTest {
+			public class MyFile {
 			  private FrameFixture window;
 			  
 			  @BeforeClass
@@ -155,7 +155,7 @@ class AssertXSwingCompilationTest {
 			import org.junit.BeforeClass;
 			
 			@SuppressWarnings("all")
-			public class ExampleJFrameTest {
+			public class MyFile {
 			  private FrameFixture window;
 			  
 			  @BeforeClass
@@ -205,7 +205,7 @@ class AssertXSwingCompilationTest {
 		import org.junit.Test;
 		
 		@SuppressWarnings("all")
-		public class ExampleJFrameTest {
+		public class MyFile {
 		  private FrameFixture window;
 		  
 		  @BeforeClass
@@ -271,7 +271,7 @@ class AssertXSwingCompilationTest {
 			import org.junit.Test;
 			
 			@SuppressWarnings("all")
-			public class ExampleJFrameTest {
+			public class MyFile {
 			  private FrameFixture field;
 			  
 			  @BeforeClass
