@@ -4,7 +4,6 @@
 package org.assertx.swing.ui.outline
 
 import com.google.inject.Inject
-import org.assertx.swing.AssertXSwingUtil
 import org.assertx.swing.assertXSwing.AXSSettings
 import org.assertx.swing.assertXSwing.AXSTestCase
 import org.assertx.swing.assertXSwing.AXSTestMethod
@@ -13,8 +12,8 @@ import org.eclipse.jface.viewers.StyledString
 import org.eclipse.xtext.ui.editor.outline.IOutlineNode
 import org.eclipse.xtext.ui.editor.outline.impl.DefaultOutlineTreeProvider
 import org.eclipse.xtext.ui.editor.outline.impl.DocumentRootNode
-import org.eclipse.xtext.util.TextRegion
 import org.eclipse.xtext.xbase.XbasePackage
+import org.assertx.swing.AssertXSwingUtils
 
 /**
  * Customization of the default outline structure.
@@ -23,7 +22,7 @@ import org.eclipse.xtext.xbase.XbasePackage
  */
 class AssertXSwingOutlineTreeProvider extends DefaultOutlineTreeProvider {
 	
-	@Inject extension AssertXSwingUtil
+	@Inject extension AssertXSwingUtils
 	
 	def _isLeaf(AXSSettings s){
 		true
@@ -34,7 +33,7 @@ class AssertXSwingOutlineTreeProvider extends DefaultOutlineTreeProvider {
 	}
 	
 	def _createChildren(IOutlineNode parentNode, AXSTestCase tc){
-		val testedClassString = new StyledString(tc.testedTypeRef.simpleName, StyledString.COUNTER_STYLER)
+		val testedClassString = new StyledString(tc.checkedTypeRefName, StyledString.COUNTER_STYLER)
 		
 		createEStructuralFeatureNode(parentNode,
 			tc,
@@ -45,7 +44,7 @@ class AssertXSwingOutlineTreeProvider extends DefaultOutlineTreeProvider {
 		)
 		
 		val styledString = new StyledString(tc.checkedFieldName).append(
-			new StyledString(': FrameFixture', StyledString.DECORATIONS_STYLER)
+			new StyledString(': ' + tc.fieldType?.simpleName, StyledString.DECORATIONS_STYLER)
 		)
 			
 		val node = createEStructuralFeatureNode(parentNode,

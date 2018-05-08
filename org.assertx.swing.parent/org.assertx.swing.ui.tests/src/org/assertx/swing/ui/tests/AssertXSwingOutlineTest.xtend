@@ -90,10 +90,36 @@ class AssertXSwingOutlineTest extends AbstractOutlineTest {
 	}
 	
 	@Test
-	def void testCompleteStructure(){
+	def void testCompleteStructureWithJFrame(){
+		assertCompleteStructure('javax.swing.JFrame', 'JFrame', 'FrameFixture')
+	}
+	
+	@Test
+	def void testNullTestedTypeReference(){
 		'''
-		testing javax.swing.JFrame
+		testing
+		'''.assertAllLabels('''
+		test
+		  void
+		  window: void
+		''')
+	}
+	
+	@Test
+	def void testCompleteStructureWithJDialog(){
+		assertCompleteStructure('javax.swing.JDialog', 'JDialog', 'DialogFixture')
+	}
 		
+	@Test
+	def void testCompleteStructureWithEmptyTypeReference(){
+		assertCompleteStructure('', 'void', 'void')	
+	}
+	
+	def private assertCompleteStructure(CharSequence testedTypeReference, 
+		CharSequence expectedTestedTypeName, CharSequence expectedFieldType
+	) {
+		'''
+		testing «testedTypeReference»
 		settings {
 			
 		}
@@ -107,8 +133,8 @@ class AssertXSwingOutlineTest extends AbstractOutlineTest {
 		}
 		'''.assertAllLabels('''
 		test
-		  JFrame
-		  window: FrameFixture
+		  «expectedTestedTypeName»
+		  window: «expectedFieldType»
 		  Settings
 		  m1: Test
 		  m2: Test
