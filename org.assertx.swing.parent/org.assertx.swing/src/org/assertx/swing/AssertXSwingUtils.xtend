@@ -41,14 +41,6 @@ class AssertXSwingUtils {
 		}
 	}
 	
-	def getCheckedFieldName(AXSTestCase tc) {
-		tc.fieldName ?: 'window'
-	}
-	
-	def getCheckedTypeRefName(AXSTestCase tc) {
-		tc.testedTypeRef?.simpleName ?: Void.TYPE.simpleName
-	}
-	
 	def Class<?> getFieldType(AXSTestCase tc){
 		val typeRef = tc.testedTypeRef.toLightweightTypeRef
 		return switch(typeRef){

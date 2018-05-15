@@ -4,6 +4,7 @@
 package org.assertx.swing.ui.outline
 
 import com.google.inject.Inject
+import org.assertx.swing.AssertXSwingUtils
 import org.assertx.swing.assertXSwing.AXSSettings
 import org.assertx.swing.assertXSwing.AXSTestCase
 import org.assertx.swing.assertXSwing.AXSTestMethod
@@ -13,7 +14,8 @@ import org.eclipse.xtext.ui.editor.outline.IOutlineNode
 import org.eclipse.xtext.ui.editor.outline.impl.DefaultOutlineTreeProvider
 import org.eclipse.xtext.ui.editor.outline.impl.DocumentRootNode
 import org.eclipse.xtext.xbase.XbasePackage
-import org.assertx.swing.AssertXSwingUtils
+
+import static extension org.assertx.swing.AssertXSwingStaticExtensions.*
 
 /**
  * Customization of the default outline structure.
