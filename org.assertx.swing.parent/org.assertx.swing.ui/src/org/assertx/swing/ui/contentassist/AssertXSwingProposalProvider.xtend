@@ -43,7 +43,6 @@ class AssertXSwingProposalProvider extends AbstractAssertXSwingProposalProvider 
 			val jDialogType = typeProvider.findTypeByName(JDialog.name)
 			createSubTypeProposal(jDialogType, context, acceptor)
 		} else {
-			println('wut')
 			super.completeJvmParameterizedTypeReference_Type(model, assignment, context, acceptor)
 		}
 	}
