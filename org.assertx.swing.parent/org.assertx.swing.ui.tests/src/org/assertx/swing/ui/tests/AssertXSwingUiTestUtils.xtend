@@ -1,21 +1,24 @@
 package org.assertx.swing.ui.tests
 
+import com.google.inject.Inject
+import com.google.inject.Provider
 import org.eclipse.core.resources.IProject
 import org.eclipse.jdt.core.JavaCore
 import org.eclipse.xtext.ui.XtextProjectHelper
-import com.google.inject.Inject
 import org.eclipse.xtext.ui.util.PluginProjectFactory
-import org.eclipse.core.runtime.NullProgressMonitor
+
+import static org.eclipse.xtext.ui.testing.util.IResourcesSetupUtil.*
 
 class AssertXSwingUiTestUtils {
 	
-	@Inject PluginProjectFactory projectFactory
+	@Inject Provider<PluginProjectFactory> projectFactoryProvider
 		
 	def IProject createPluginProject(String name) {
+		val projectFactory = projectFactoryProvider.get
 		projectFactory.breeToUse = 'JavaSE-1.8'
 		projectFactory.withPluginXml = false
 		projectFactory.projectName = name
-		projectFactory.addFolders(#["src"]);
+		projectFactory.addFolders(#["src", "src-gen"]);
 		
 		projectFactory.addBuilderIds(JavaCore.BUILDER_ID,
 			"org.eclipse.pde.ManifestBuilder",
@@ -29,6 +32,6 @@ class AssertXSwingUiTestUtils {
 		)
 		projectFactory.addRequiredBundles(#['org.junit', 'org.assertj.swing', 'org.eclipse.xtext.xbase.lib'])
 		
-		return projectFactory.createProject(new NullProgressMonitor(),	null)
+		return projectFactory.createProject(monitor,	null)
 	}
 }

@@ -15,6 +15,8 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 import static org.junit.Assert.*
+import org.example.testutils.PDETargetPlatformUtils
+import org.junit.BeforeClass
 
 @RunWith(XtextRunner)
 @InjectWith(AssertXSwingUiInjectorProvider)
@@ -23,6 +25,11 @@ class AssertXSwingContentAssistTest extends AbstractContentAssistTest {
 	var IJavaProject project
 	
 	@Inject AssertXSwingUiTestUtils testUtils
+	
+	@BeforeClass
+	def static void setTargetPlatform(){
+		PDETargetPlatformUtils.setTargetPlatform
+	}
 	
 	@Before
 	def void init(){
