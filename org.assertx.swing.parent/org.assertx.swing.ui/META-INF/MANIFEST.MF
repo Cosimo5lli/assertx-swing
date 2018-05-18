@@ -19,10 +19,13 @@ Require-Bundle: org.assertx.swing,
  org.eclipse.compare,
  org.eclipse.xtext.builder,
  org.eclipse.xtend.lib;resolution:=optional,
- org.eclipse.jdt.debug.ui
+ org.eclipse.jdt.debug.ui,
+ org.eclipse.core.runtime,
+ org.eclipse.core.resources
 Import-Package: org.apache.log4j
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Export-Package: org.assertx.swing.ui.internal,
- org.assertx.swing.ui.contentassist,
- org.assertx.swing.ui.quickfix
+Export-Package: org.assertx.swing.ui.contentassist,
+ org.assertx.swing.ui.internal,
+ org.assertx.swing.ui.quickfix,
+ org.assertx.swing.ui.wizard
 Bundle-Activator: org.assertx.swing.ui.internal.SwingActivator

@@ -4,10 +4,16 @@
 package org.assertx.swing.ui
 
 import org.eclipse.xtend.lib.annotations.FinalFieldsConstructor
+import org.eclipse.xtext.ui.wizard.IProjectCreator
+import org.assertx.swing.ui.wizard.AssertXSwingProjectCreatorManagingDependencies
 
 /**
  * Use this class to register components to be used within the Eclipse IDE.
  */
 @FinalFieldsConstructor
 class AssertXSwingUiModule extends AbstractAssertXSwingUiModule {
+
+	override Class<? extends IProjectCreator> bindIProjectCreator() {
+		AssertXSwingProjectCreatorManagingDependencies
+	}
 }
