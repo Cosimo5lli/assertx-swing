@@ -9,8 +9,7 @@ import org.assertj.swing.core.Robot
 import org.assertj.swing.core.Settings
 import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
 import org.assertj.swing.edt.GuiActionRunner
-import org.assertj.swing.fixture.FrameFixture
-import org.assertx.swing.AssertXSwingUtil
+import org.assertx.swing.AssertXSwingUtils
 import org.assertx.swing.assertXSwing.AXSTestCase
 import org.eclipse.xtext.common.types.JvmDeclaredType
 import org.eclipse.xtext.common.types.JvmGenericType
@@ -23,6 +22,8 @@ import org.junit.Before
 import org.junit.BeforeClass
 import org.junit.Test
 
+
+import static extension org.assertx.swing.AssertXSwingStaticExtensions.*
 /**
  * <p>Infers a JVM model from the source model.</p> 
  * 
@@ -30,13 +31,18 @@ import org.junit.Test
  * which is generated from the source model. Other models link against the JVM model rather than the source model.</p>     
  */
 class AssertXSwingJvmModelInferrer extends AbstractModelInferrer {
+	
+	public static val BEFORE_CLASS_METHOD_NAME = '_beforeClass'
+	public static val BEFORE_METHOD_NAME = '_setup'
+	public static val AFTER_METHOD_NAME = '_cleanUp'
+	public static val SETTINGS_METHOD_NAME = '_customizeSettings'
 
 	/**
 	 * convenience API to build and initialize JVM types and their members.
 	 */
 	@Inject extension JvmTypesBuilder
 	
-	@Inject	extension AssertXSwingUtil
+	@Inject	extension AssertXSwingUtils
 	/**
 	 * The dispatch method {@code infer} is called for each instance of the
 	 * given element's type that is contained in a resource.
@@ -63,10 +69,11 @@ class AssertXSwingJvmModelInferrer extends AbstractModelInferrer {
 	def dispatch void infer(AXSTestCase element, IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase) {
 		// Here you explain how your model is mapped to Java elements, by writing the actual translation code.
 		val testedClass = element?.testedTypeRef?.type
-		val testedClassName = testedClass?.simpleName
-		acceptor.accept(element.toClass(testedClassName + 'Test')) [
-			members += element.toField(element.checkedFieldName, typeRef(FrameFixture))
-			members += element.toMethod('beforeClass', typeRef(Void.TYPE)) [
+		val testingClassName = element.eResource.URI.trimFileExtension.lastSegment
+		val fixtureType =  element.fieldType
+		acceptor.accept(element.toClass(testingClassName)) [
+			members += element.toField(element.checkedFieldName, typeRef(fixtureType))
+			members += element.toMethod(BEFORE_CLASS_METHOD_NAME, typeRef(Void.TYPE)) [
 				annotations += annotationRef(BeforeClass)
 				static = true
 				body = '''«typeRef(FailOnThreadViolationRepaintManager)».install();'''
@@ -74,19 +81,19 @@ class AssertXSwingJvmModelInferrer extends AbstractModelInferrer {
 
 			generateSettingsMethod(element)
 
-			members += element.toMethod('setup', typeRef(Void.TYPE)) [
+			members += element.toMethod(BEFORE_METHOD_NAME, typeRef(Void.TYPE)) [
 				annotations += annotationRef(Before)
 				body = '''
 					«IF element.settings !== null»
 						«typeRef(Robot)» robot = «typeRef(BasicRobot)».robotWithCurrentAwtHierarchy();
-						this.customizeSettings(robot.settings());
+						this.«SETTINGS_METHOD_NAME»(robot.settings());
 					«ENDIF»
 					«typeRef(testedClass)» frame = «typeRef(GuiActionRunner)».execute(() -> new «typeRef(testedClass)»());
-					this.«element.checkedFieldName» = new «typeRef(FrameFixture)»(«if(element.settings !== null) 'robot, ' else ''»frame);
+					this.«element.checkedFieldName» = new «typeRef(fixtureType)»(«if(element.settings !== null) 'robot, ' else ''»frame);
 				'''
 			]
 
-			members += element.toMethod('cleanUp', typeRef(Void.TYPE)) [
+			members += element.toMethod(AFTER_METHOD_NAME, typeRef(Void.TYPE)) [
 				annotations += annotationRef(After)
 				body = '''
 					this.«element.checkedFieldName».cleanUp();
@@ -105,7 +112,7 @@ class AssertXSwingJvmModelInferrer extends AbstractModelInferrer {
 	def private generateSettingsMethod(JvmGenericType it, AXSTestCase tc) {
 		val settings = tc.settings
 		if (settings !== null) {
-			members += settings.toMethod('customizeSettings', typeRef(Void.TYPE)) [
+			members += settings.toMethod(SETTINGS_METHOD_NAME, typeRef(Void.TYPE)) [
 				visibility = JvmVisibility.PRIVATE
 				parameters += settings.toParameter('it', typeRef(Settings))
 				body = settings.block

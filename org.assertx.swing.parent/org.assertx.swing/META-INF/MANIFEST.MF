@@ -29,6 +29,7 @@ Export-Package: org.assertx.swing.serializer,
  org.assertx.swing.validation,
  org.assertx.swing.jvmmodel,
  org.assertx.swing.services,
- org.assertx.swing.assertXSwing.impl
+ org.assertx.swing.assertXSwing.impl,
+ org.assertx.swing.formatting2
 Import-Package: org.apache.log4j
 Bundle-ClassPath: .

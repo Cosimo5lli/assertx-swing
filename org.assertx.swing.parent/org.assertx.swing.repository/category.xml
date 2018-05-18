@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
-	<feature id="org.assertx.swing.feature" version="0.0.0">
-		<category name="main"/>
-	</feature>
-	<feature id="org.assertx.swing.feature.source" version="0.0.0">
-		<category name="main.source"/>
-	</feature>
-	<category-def name="main" label="AssertXSwing"/>
-	<category-def name="main.source" label="AssertXSwing (Sources)"/>
+   <feature id="org.assertx.swing.feature" version="0.0.0">
+      <category name="main"/>
+   </feature>
+   <feature id="org.assertx.swing.feature.source" version="0.0.0">
+      <category name="main.source"/>
+   </feature>
+   <bundle id="org.assertj.swing" version="1.0.0.qualifier">
+      <category name="main"/>
+   </bundle>
+   <category-def name="main" label="AssertXSwing"/>
+   <category-def name="main.source" label="AssertXSwing (Sources)"/>
 </site>

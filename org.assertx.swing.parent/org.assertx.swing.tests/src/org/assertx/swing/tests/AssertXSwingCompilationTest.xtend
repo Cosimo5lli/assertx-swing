@@ -39,22 +39,22 @@ class AssertXSwingCompilationTest {
 			import org.junit.BeforeClass;
 			
 			@SuppressWarnings("all")
-			public class ExampleJFrameTest {
+			public class MyFile {
 			  private FrameFixture window;
 			  
 			  @BeforeClass
-			  public static void beforeClass() {
+			  public static void _beforeClass() {
 			    FailOnThreadViolationRepaintManager.install();
 			  }
 			  
 			  @Before
-			  public void setup() {
+			  public void _setup() {
 			    ExampleJFrame frame = GuiActionRunner.execute(() -> new ExampleJFrame());
 			    this.window = new FrameFixture(frame);
 			  }
 			  
 			  @After
-			  public void cleanUp() {
+			  public void _cleanUp() {
 			    this.window.cleanUp();
 			  }
 			}
@@ -82,28 +82,28 @@ class AssertXSwingCompilationTest {
 			import org.junit.BeforeClass;
 			
 			@SuppressWarnings("all")
-			public class ExampleJFrameTest {
+			public class MyFile {
 			  private FrameFixture window;
 			  
 			  @BeforeClass
-			  public static void beforeClass() {
+			  public static void _beforeClass() {
 			    FailOnThreadViolationRepaintManager.install();
 			  }
 			  
-			  private void customizeSettings(final Settings it) {
+			  private void _customizeSettings(final Settings it) {
 			    it.delayBetweenEvents(200);
 			  }
 			  
 			  @Before
-			  public void setup() {
+			  public void _setup() {
 			    Robot robot = BasicRobot.robotWithCurrentAwtHierarchy();
-			    this.customizeSettings(robot.settings());
+			    this._customizeSettings(robot.settings());
 			    ExampleJFrame frame = GuiActionRunner.execute(() -> new ExampleJFrame());
 			    this.window = new FrameFixture(robot, frame);
 			  }
 			  
 			  @After
-			  public void cleanUp() {
+			  public void _cleanUp() {
 			    this.window.cleanUp();
 			  }
 			}
@@ -155,22 +155,22 @@ class AssertXSwingCompilationTest {
 			import org.junit.BeforeClass;
 			
 			@SuppressWarnings("all")
-			public class ExampleJFrameTest {
+			public class MyFile {
 			  private FrameFixture window;
 			  
 			  @BeforeClass
-			  public static void beforeClass() {
+			  public static void _beforeClass() {
 			    FailOnThreadViolationRepaintManager.install();
 			  }
 			  
 			  @Before
-			  public void setup() {
+			  public void _setup() {
 			    ExampleJFrame frame = GuiActionRunner.execute(() -> new ExampleJFrame());
 			    this.window = new FrameFixture(frame);
 			  }
 			  
 			  @After
-			  public void cleanUp() {
+			  public void _cleanUp() {
 			    this.window.cleanUp();
 			  }
 			}
@@ -205,22 +205,22 @@ class AssertXSwingCompilationTest {
 		import org.junit.Test;
 		
 		@SuppressWarnings("all")
-		public class ExampleJFrameTest {
+		public class MyFile {
 		  private FrameFixture window;
 		  
 		  @BeforeClass
-		  public static void beforeClass() {
+		  public static void _beforeClass() {
 		    FailOnThreadViolationRepaintManager.install();
 		  }
 		  
 		  @Before
-		  public void setup() {
+		  public void _setup() {
 		    ExampleJFrame frame = GuiActionRunner.execute(() -> new ExampleJFrame());
 		    this.window = new FrameFixture(frame);
 		  }
 		  
 		  @After
-		  public void cleanUp() {
+		  public void _cleanUp() {
 		    this.window.cleanUp();
 		  }
 		  
@@ -271,22 +271,22 @@ class AssertXSwingCompilationTest {
 			import org.junit.Test;
 			
 			@SuppressWarnings("all")
-			public class ExampleJFrameTest {
+			public class MyFile {
 			  private FrameFixture field;
 			  
 			  @BeforeClass
-			  public static void beforeClass() {
+			  public static void _beforeClass() {
 			    FailOnThreadViolationRepaintManager.install();
 			  }
 			  
 			  @Before
-			  public void setup() {
+			  public void _setup() {
 			    ExampleJFrame frame = GuiActionRunner.execute(() -> new ExampleJFrame());
 			    this.field = new FrameFixture(frame);
 			  }
 			  
 			  @After
-			  public void cleanUp() {
+			  public void _cleanUp() {
 			    this.field.cleanUp();
 			  }
 			  
