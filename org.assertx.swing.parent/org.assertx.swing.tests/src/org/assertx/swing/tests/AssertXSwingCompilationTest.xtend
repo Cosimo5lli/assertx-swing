@@ -58,12 +58,11 @@ class AssertXSwingCompilationTest {
 			    this.window.cleanUp();
 			  }
 			}
-			''')
+		''')
 	}
-	
-	
+
 	@Test
-	def void testSettingsSectionGeneration(){
+	def void testSettingsSectionGeneration() {
 		'''
 		testing «ExampleJFrame.canonicalName»
 		
@@ -107,7 +106,7 @@ class AssertXSwingCompilationTest {
 			    this.window.cleanUp();
 			  }
 			}
-			''')
+		''')
 	}
 
 	@Test
@@ -136,16 +135,65 @@ class AssertXSwingCompilationTest {
 			'shouldIEvenWriteThis'.assertEquals(methods.get(4).name)
 		]
 	}
-	
+
 	@Test
-	def void testNullMethodNameTranslation(){
+	def void testNullMethodNameTranslation() {
 		'''
-		testing «ExampleJFrame.canonicalName»
-		
-		test {}
-		'''.compile[
+			testing «ExampleJFrame.canonicalName»
+			
+			test {}
+		'''.compile [
 			1.assertEquals(errorsAndWarnings.size)
 			'''
+				import org.assertj.swing.edt.FailOnThreadViolationRepaintManager;
+				import org.assertj.swing.edt.GuiActionRunner;
+				import org.assertj.swing.fixture.FrameFixture;
+				import org.assertx.swing.tests.ExampleJFrame;
+				import org.junit.After;
+				import org.junit.Before;
+				import org.junit.BeforeClass;
+				
+				@SuppressWarnings("all")
+				public class MyFile {
+				  private FrameFixture window;
+				  
+				  @BeforeClass
+				  public static void _beforeClass() {
+				    FailOnThreadViolationRepaintManager.install();
+				  }
+				  
+				  @Before
+				  public void _setup() {
+				    ExampleJFrame frame = GuiActionRunner.execute(() -> new ExampleJFrame());
+				    this.window = new FrameFixture(frame);
+				  }
+				  
+				  @After
+				  public void _cleanUp() {
+				    this.window.cleanUp();
+				  }
+				}
+			'''.toString.assertEquals(singleGeneratedCode)
+		]
+	}
+
+	@Test
+	def void testMethodNamesCollisions() {
+		'''
+			testing «ExampleJFrame.canonicalName»
+			
+			test 'first method' {}
+			
+			test 'first method' {}
+			
+			test 'First Method' {}
+			
+			test 'first Method' {}
+			
+			test 'firstMethod' {}
+			
+			test 'First è%#@ me]thod' {}
+		'''.assertCompilesTo('''
 			import org.assertj.swing.edt.FailOnThreadViolationRepaintManager;
 			import org.assertj.swing.edt.GuiActionRunner;
 			import org.assertj.swing.fixture.FrameFixture;
@@ -153,6 +201,7 @@ class AssertXSwingCompilationTest {
 			import org.junit.After;
 			import org.junit.Before;
 			import org.junit.BeforeClass;
+			import org.junit.Test;
 			
 			@SuppressWarnings("all")
 			public class MyFile {
@@ -173,137 +222,103 @@ class AssertXSwingCompilationTest {
 			  public void _cleanUp() {
 			    this.window.cleanUp();
 			  }
-			}
-			'''.toString.assertEquals(singleGeneratedCode)
-		]
-	}
-	
-	@Test
-	def void testMethodNamesCollisions(){
-		'''
-		testing «ExampleJFrame.canonicalName»
-		
-		test 'first method' {}
-		
-		test 'first method' {}
-		
-		test 'First Method' {}
-		
-		test 'first Method' {}
-		
-		test 'firstMethod' {}
-		
-		test 'First è%#@ me]thod' {}
-		'''.assertCompilesTo('''
-		import org.assertj.swing.edt.FailOnThreadViolationRepaintManager;
-		import org.assertj.swing.edt.GuiActionRunner;
-		import org.assertj.swing.fixture.FrameFixture;
-		import org.assertx.swing.tests.ExampleJFrame;
-		import org.junit.After;
-		import org.junit.Before;
-		import org.junit.BeforeClass;
-		import org.junit.Test;
-		
-		@SuppressWarnings("all")
-		public class MyFile {
-		  private FrameFixture window;
-		  
-		  @BeforeClass
-		  public static void _beforeClass() {
-		    FailOnThreadViolationRepaintManager.install();
-		  }
-		  
-		  @Before
-		  public void _setup() {
-		    ExampleJFrame frame = GuiActionRunner.execute(() -> new ExampleJFrame());
-		    this.window = new FrameFixture(frame);
-		  }
-		  
-		  @After
-		  public void _cleanUp() {
-		    this.window.cleanUp();
-		  }
-		  
-		  @Test
-		  public void firstMethod() {
-		  }
-		  
-		  @Test
-		  public void firstMethod_1_() {
-		  }
-		  
-		  @Test
-		  public void firstMethod_2_() {
-		  }
-		  
-		  @Test
-		  public void firstMethod_3_() {
-		  }
-		  
-		  @Test
-		  public void firstMethod_4_() {
-		  }
-		  
-		  @Test
-		  public void firstMethod_5_() {
-		  }
-		}
-		''')
-	}
-	
-	@Test
-	def void testCustomFieldName(){
-		'''
-		testing «ExampleJFrame.canonicalName» as field
-		
-		test 'method' {
-			field.textBox('textToCopy').deleteText
-		}
-		'''.assertCompilesTo(
-			'''
-			import org.assertj.swing.edt.FailOnThreadViolationRepaintManager;
-			import org.assertj.swing.edt.GuiActionRunner;
-			import org.assertj.swing.fixture.FrameFixture;
-			import org.assertx.swing.tests.ExampleJFrame;
-			import org.junit.After;
-			import org.junit.Before;
-			import org.junit.BeforeClass;
-			import org.junit.Test;
-			
-			@SuppressWarnings("all")
-			public class MyFile {
-			  private FrameFixture field;
 			  
-			  @BeforeClass
-			  public static void _beforeClass() {
-			    FailOnThreadViolationRepaintManager.install();
-			  }
-			  
-			  @Before
-			  public void _setup() {
-			    ExampleJFrame frame = GuiActionRunner.execute(() -> new ExampleJFrame());
-			    this.field = new FrameFixture(frame);
-			  }
-			  
-			  @After
-			  public void _cleanUp() {
-			    this.field.cleanUp();
+			  @Test
+			  public void firstMethod() {
 			  }
 			  
 			  @Test
-			  public void method() {
-			    this.field.textBox("textToCopy").deleteText();
+			  public void firstMethod_1_() {
+			  }
+			  
+			  @Test
+			  public void firstMethod_2_() {
+			  }
+			  
+			  @Test
+			  public void firstMethod_3_() {
+			  }
+			  
+			  @Test
+			  public void firstMethod_4_() {
+			  }
+			  
+			  @Test
+			  public void firstMethod_5_() {
 			  }
 			}
+		''')
+	}
+
+	@Test
+	def void testCustomFieldName() {
+		'''
+			testing «ExampleJFrame.canonicalName» as field
+			
+			test 'method' {
+				field.textBox('textToCopy').deleteText
+			}
+		'''.assertCompilesTo(
+			'''
+				import org.assertj.swing.edt.FailOnThreadViolationRepaintManager;
+				import org.assertj.swing.edt.GuiActionRunner;
+				import org.assertj.swing.fixture.FrameFixture;
+				import org.assertx.swing.tests.ExampleJFrame;
+				import org.junit.After;
+				import org.junit.Before;
+				import org.junit.BeforeClass;
+				import org.junit.Test;
+				
+				@SuppressWarnings("all")
+				public class MyFile {
+				  private FrameFixture field;
+				  
+				  @BeforeClass
+				  public static void _beforeClass() {
+				    FailOnThreadViolationRepaintManager.install();
+				  }
+				  
+				  @Before
+				  public void _setup() {
+				    ExampleJFrame frame = GuiActionRunner.execute(() -> new ExampleJFrame());
+				    this.field = new FrameFixture(frame);
+				  }
+				  
+				  @After
+				  public void _cleanUp() {
+				    this.field.cleanUp();
+				  }
+				  
+				  @Test
+				  public void method() {
+				    this.field.textBox("textToCopy").deleteText();
+				  }
+				}
 			'''
 		)
 	}
 
+	@Test
+	def void testGeneratedClassNameAlwaysStartsWithUpperCase() {
+		val resourceset = resourceSet('lowerCaseFile.assertxs' -> '''
+			testing javax.swing.JFrame
+		''')
+
+		resourceset.compile [
+			val className = compiledClass.simpleName
+			val fullClassName = compiledClass.canonicalName
+			assertTrue(
+				"name of generated class '" + fullClassName + "' doesn't start with uppercase letter",
+				Character::isUpperCase(className.charAt(0))
+			)
+		]
+	}
+
 //	@Test
-	//doesn't work, i don't know why, it simply doesn't run the tests of the compiled class
-	//NOTE: it was actually an error in the inferrer, the @BeforeClass was not set to be 
-	//static, so tests wouldn't run
-	//TODO: move this test somewhere else, since it cannot be run headlessly
+	// doesn't work, i don't know why, it simply doesn't run the tests of the compiled class
+	// NOTE: it was actually an error in the inferrer, the @BeforeClass was not set to be 
+	// static, so tests wouldn't run
+	// TODO: move this test somewhere else, since it cannot be run headlessly
 	// and seems more like an heavy integration test
 	def void testJUnitTestCaseInstantiation() {
 		'''
