@@ -10,6 +10,7 @@ import org.eclipse.xtext.formatting2.IFormattableDocument
 import org.eclipse.xtext.xbase.formatting2.XbaseFormatter
 
 import static org.assertx.swing.assertXSwing.AssertXSwingPackage.Literals.*
+import static extension org.assertx.swing.AssertXSwingStaticExtensions.*
 
 class AssertXSwingFormatter extends XbaseFormatter {
 

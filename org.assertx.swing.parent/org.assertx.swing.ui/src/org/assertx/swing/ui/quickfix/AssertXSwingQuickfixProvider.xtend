@@ -12,6 +12,8 @@ import org.eclipse.xtext.ui.editor.quickfix.IssueResolutionAcceptor
 import org.eclipse.xtext.validation.Issue
 import org.eclipse.xtext.xbase.ui.quickfix.XbaseQuickfixProvider
 
+import static extension org.assertx.swing.AssertXSwingStaticExtensions.*
+
 /**
  * Custom quickfixes.
  *

@@ -4,14 +4,27 @@ generate assertXSwing "http://www.assertx.org/swing/AssertXSwing"
 
 AXSTestCase:
 	'testing' testedTypeRef=JvmParameterizedTypeReference ('as' fieldName=ID)?
-	settings=AXSSettings?
-	tests+=AXSTestMethod*
+	imports=XImportSection?
+	members+=AXSMembers*
+;
+
+AXSMembers:
+	AXSSettings | AXSTestMethod | AXSMatcher
 ;
 
 AXSTestMethod:
-	'test' name=STRING block=XBlockExpression
+	'test' name=STRING ('using' matchers+=AXSMatcherRef (',' matchers+=AXSMatcherRef)*)?
+	block=XBlockExpression
+;
+
+AXSMatcherRef:
+	reference=JvmParameterizedTypeReference ('as' variableName=ValidID)?
 ;
 
 AXSSettings:
 	'settings' block=XBlockExpression
+;
+
+AXSMatcher:
+	'matcher' name=ValidID type=JvmParameterizedTypeReference matchingLambda=XClosure
 ;

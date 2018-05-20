@@ -15,6 +15,8 @@ import org.eclipse.xtext.xbase.XBlockExpression
 import org.eclipse.xtext.xbase.XVariableDeclaration
 import org.eclipse.xtext.xbase.XStringLiteral
 
+import static extension org.assertx.swing.AssertXSwingStaticExtensions.*
+
 @RunWith(XtextRunner)
 @InjectWith(AssertXSwingInjectorProvider)
 class AssertXSwingParsingTest {
