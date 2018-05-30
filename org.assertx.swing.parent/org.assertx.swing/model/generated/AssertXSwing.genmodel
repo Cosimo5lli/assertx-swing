@@ -19,7 +19,7 @@
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference AssertXSwing.ecore#//AXSTestMethod/block"/>
     </genClasses>
     <genClasses ecoreClass="AssertXSwing.ecore#//AXSMatcherRef">
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference AssertXSwing.ecore#//AXSMatcherRef/reference"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference AssertXSwing.ecore#//AXSMatcherRef/reference"/>
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute AssertXSwing.ecore#//AXSMatcherRef/variableName"/>
     </genClasses>
     <genClasses ecoreClass="AssertXSwing.ecore#//AXSSettings">
@@ -28,7 +28,7 @@
     <genClasses ecoreClass="AssertXSwing.ecore#//AXSMatcher">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute AssertXSwing.ecore#//AXSMatcher/name"/>
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference AssertXSwing.ecore#//AXSMatcher/type"/>
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference AssertXSwing.ecore#//AXSMatcher/matchingLambda"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference AssertXSwing.ecore#//AXSMatcher/matchingExpression"/>
     </genClasses>
   </genPackages>
 </genmodel:GenModel>

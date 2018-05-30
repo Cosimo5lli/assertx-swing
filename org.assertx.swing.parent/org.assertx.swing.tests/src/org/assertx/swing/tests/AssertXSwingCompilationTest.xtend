@@ -314,6 +314,147 @@ class AssertXSwingCompilationTest {
 		]
 	}
 
+	@Test
+	def void testMatcherCompilesToInnerClass() {
+		'''
+			testing javax.swing.JFrame
+			
+			isEmptyLabel match javax.swing.JLabel {
+				it.getText.length == 0
+			}
+		'''.assertCompilesTo('''
+			import javax.swing.JFrame;
+			import javax.swing.JLabel;
+			import org.assertj.swing.core.GenericTypeMatcher;
+			import org.assertj.swing.edt.FailOnThreadViolationRepaintManager;
+			import org.assertj.swing.edt.GuiActionRunner;
+			import org.assertj.swing.fixture.FrameFixture;
+			import org.junit.After;
+			import org.junit.Before;
+			import org.junit.BeforeClass;
+			
+			@SuppressWarnings("all")
+			public class MyFile {
+			  private FrameFixture window;
+			  
+			  @BeforeClass
+			  public static void _beforeClass() {
+			    FailOnThreadViolationRepaintManager.install();
+			  }
+			  
+			  @Before
+			  public void _setup() {
+			    JFrame frame = GuiActionRunner.execute(() -> new JFrame());
+			    this.window = new FrameFixture(frame);
+			  }
+			  
+			  @After
+			  public void _cleanUp() {
+			    this.window.cleanUp();
+			  }
+			  
+			  public class IsEmptyLabel extends GenericTypeMatcher<JLabel> {
+			    public IsEmptyLabel() {
+			      super(JLabel.class);
+			    }
+			    
+			    @Override
+			    public boolean isMatching(final JLabel it) {
+			      int _length = it.getText().length();
+			      return (_length == 0);
+			    }
+			  }
+			}
+		''')
+	}
+
+	@Test
+	def void testMatcherUsage() {
+		'''
+				testing javax.swing.JFrame
+				
+				test 'boia' using isMatch, veryLabel {
+				window.button(isMatch)
+				window.textBox(veryLabel)
+				}
+			
+			isMatch match javax.swing.JButton {
+				true
+			}
+			
+			veryLabel match javax.swing.JLabel {
+				false
+			}
+		'''.assertCompilesTo('''
+			import javax.swing.JButton;
+			import javax.swing.JFrame;
+			import javax.swing.JLabel;
+			import org.assertj.swing.core.GenericTypeMatcher;
+			import org.assertj.swing.edt.FailOnThreadViolationRepaintManager;
+			import org.assertj.swing.edt.GuiActionRunner;
+			import org.assertj.swing.fixture.FrameFixture;
+			import org.junit.After;
+			import org.junit.Before;
+			import org.junit.BeforeClass;
+			import org.junit.Test;
+			
+			@SuppressWarnings("all")
+			public class MyFile {
+			  private FrameFixture window;
+			  
+			  @BeforeClass
+			  public static void _beforeClass() {
+			    FailOnThreadViolationRepaintManager.install();
+			  }
+			  
+			  @Before
+			  public void _setup() {
+			    JFrame frame = GuiActionRunner.execute(() -> new JFrame());
+			    this.window = new FrameFixture(frame);
+			  }
+			  
+			  @After
+			  public void _cleanUp() {
+			    this.window.cleanUp();
+			  }
+			  
+			  public class IsMatch extends GenericTypeMatcher<JButton> {
+			    public IsMatch() {
+			      super(JButton.class);
+			    }
+			    
+			    @Override
+			    public boolean isMatching(final JButton it) {
+			      return true;
+			    }
+			  }
+			  
+			  public class VeryLabel extends GenericTypeMatcher<JLabel> {
+			    public VeryLabel() {
+			      super(JLabel.class);
+			    }
+			    
+			    @Override
+			    public boolean isMatching(final JLabel it) {
+			      return false;
+			    }
+			  }
+			  
+			  private void boia(final IsMatch isMatch, final VeryLabel veryLabel) {
+			    this.window.button(isMatch);
+			    this.window.textBox(veryLabel);
+			  }
+			  
+			  @Test
+			  public void _generated_boia() {
+			    IsMatch _isMatch = new IsMatch();
+			    VeryLabel _veryLabel = new VeryLabel();
+			    this.boia(_isMatch, _veryLabel);
+			  }
+			}
+		''')
+	}
+
 //	@Test
 	// doesn't work, i don't know why, it simply doesn't run the tests of the compiled class
 	// NOTE: it was actually an error in the inferrer, the @BeforeClass was not set to be 

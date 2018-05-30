@@ -2,6 +2,8 @@ grammar org.assertx.swing.AssertXSwing with org.eclipse.xtext.xbase.Xbase
 
 generate assertXSwing "http://www.assertx.org/swing/AssertXSwing"
 
+import "http://www.eclipse.org/xtext/common/JavaVMTypes" as types
+
 AXSTestCase:
 	'testing' testedTypeRef=JvmParameterizedTypeReference ('as' fieldName=ID)?
 	imports=XImportSection?
@@ -18,7 +20,7 @@ AXSTestMethod:
 ;
 
 AXSMatcherRef:
-	reference=JvmParameterizedTypeReference ('as' variableName=ValidID)?
+	reference=[AXSMatcher|ValidID] ('as' variableName=ValidID)?
 ;
 
 AXSSettings:
@@ -26,5 +28,5 @@ AXSSettings:
 ;
 
 AXSMatcher:
-	'matcher' name=ValidID type=JvmParameterizedTypeReference matchingLambda=XClosure
+	name=ValidID 'match' type=JvmParameterizedTypeReference matchingExpression=XBlockExpression
 ;
