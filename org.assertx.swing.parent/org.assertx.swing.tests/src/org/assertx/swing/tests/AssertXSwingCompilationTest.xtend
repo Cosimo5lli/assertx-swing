@@ -319,7 +319,7 @@ class AssertXSwingCompilationTest {
 		'''
 			testing javax.swing.JFrame
 			
-			isEmptyLabel match javax.swing.JLabel {
+			match isEmptyLabel : javax.swing.JLabel {
 				it.getText.length == 0
 			}
 		'''.assertCompilesTo('''
@@ -371,18 +371,18 @@ class AssertXSwingCompilationTest {
 	@Test
 	def void testMatcherUsage() {
 		'''
-				testing javax.swing.JFrame
-				
-				test 'boia' using isMatch, veryLabel {
-				window.button(isMatch)
-				window.textBox(veryLabel)
-				}
+			testing javax.swing.JFrame
 			
-			isMatch match javax.swing.JButton {
+			test 'm' {
+				window.button(?isMatch?)
+				window.textBox(?noLabel?)
+			}
+			
+			match isMatch : javax.swing.JButton {
 				true
 			}
 			
-			veryLabel match javax.swing.JLabel {
+			match noLabel : javax.swing.JLabel {
 				false
 			}
 		'''.assertCompilesTo('''
@@ -429,8 +429,8 @@ class AssertXSwingCompilationTest {
 			    }
 			  }
 			  
-			  public class VeryLabel extends GenericTypeMatcher<JLabel> {
-			    public VeryLabel() {
+			  public class NoLabel extends GenericTypeMatcher<JLabel> {
+			    public NoLabel() {
 			      super(JLabel.class);
 			    }
 			    
@@ -440,16 +440,78 @@ class AssertXSwingCompilationTest {
 			    }
 			  }
 			  
-			  private void boia(final IsMatch isMatch, final VeryLabel veryLabel) {
-			    this.window.button(isMatch);
-			    this.window.textBox(veryLabel);
+			  @Test
+			  public void m() {
+			    IsMatch _isMatch = new IsMatch();
+			    this.window.button(_isMatch);
+			    NoLabel _noLabel = new NoLabel();
+			    this.window.textBox(_noLabel);
+			  }
+			}
+		''')
+	}
+
+	@Test
+	def void testMatcherRefReuseExistingVariable() {
+		'''
+			testing javax.swing.JFrame
+			
+			match aMatch : javax.swing.JLabel {
+				false
+			}
+			
+			test 'm' {
+				window.label(?aMatch?)
+				window.label(?aMatch?)
+			}
+		'''.assertCompilesTo('''
+			import javax.swing.JFrame;
+			import javax.swing.JLabel;
+			import org.assertj.swing.core.GenericTypeMatcher;
+			import org.assertj.swing.edt.FailOnThreadViolationRepaintManager;
+			import org.assertj.swing.edt.GuiActionRunner;
+			import org.assertj.swing.fixture.FrameFixture;
+			import org.junit.After;
+			import org.junit.Before;
+			import org.junit.BeforeClass;
+			import org.junit.Test;
+			
+			@SuppressWarnings("all")
+			public class MyFile {
+			  private FrameFixture window;
+			  
+			  @BeforeClass
+			  public static void _beforeClass() {
+			    FailOnThreadViolationRepaintManager.install();
+			  }
+			  
+			  @Before
+			  public void _setup() {
+			    JFrame frame = GuiActionRunner.execute(() -> new JFrame());
+			    this.window = new FrameFixture(frame);
+			  }
+			  
+			  @After
+			  public void _cleanUp() {
+			    this.window.cleanUp();
+			  }
+			  
+			  public class AMatch extends GenericTypeMatcher<JLabel> {
+			    public AMatch() {
+			      super(JLabel.class);
+			    }
+			    
+			    @Override
+			    public boolean isMatching(final JLabel it) {
+			      return false;
+			    }
 			  }
 			  
 			  @Test
-			  public void _generated_boia() {
-			    IsMatch _isMatch = new IsMatch();
-			    VeryLabel _veryLabel = new VeryLabel();
-			    this.boia(_isMatch, _veryLabel);
+			  public void m() {
+			    AMatch _aMatch = new AMatch();
+			    this.window.label(_aMatch);
+			    this.window.label(_aMatch);
 			  }
 			}
 		''')

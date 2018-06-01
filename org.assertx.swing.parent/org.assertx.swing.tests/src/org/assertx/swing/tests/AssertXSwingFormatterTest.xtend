@@ -23,7 +23,6 @@ class AssertXSwingFormatterTest {
 			settings {
 				delayBetweenEvents = 300
 			}
-			
 			'''
 		]
 	}
@@ -66,4 +65,61 @@ class AssertXSwingFormatterTest {
 		]
 	}
 	
+	@Test
+	def void testMatcherFormatter(){
+		assertFormatted[
+			toBeFormatted = '''testing javax.swing.JFrame match  name:javax.swing.JButton{}'''
+			expectation = '''
+			testing javax.swing.JFrame
+			
+			match name : javax.swing.JButton {
+			}
+			'''
+		]
+	}
+	
+	@Test
+	def void testFormatImportSection(){
+		assertFormatted[
+			toBeFormatted = '''
+			testing javax.swing.JFrame import javax.swing.JButton import static java.util.List'''
+			
+			expectation = '''
+			testing javax.swing.JFrame
+			
+			import javax.swing.JButton
+			import static java.util.List
+			
+			'''
+		]
+	}
+	
+	@Test
+	def void testFormatCompleteTestCase(){
+		assertFormatted[
+			toBeFormatted = '''
+			testing javax.swing.JFrame import javax.swing.JButton import java.util.List test'm1'{window.button.click val i=null}settings{delayBetweenEvents=200}match name:javax.swing.JLabel{val i=0 true}'''
+			
+			expectation = '''
+			testing javax.swing.JFrame
+			
+			import javax.swing.JButton
+			import java.util.List
+			
+			test 'm1' {
+				window.button.click
+				val i = null
+			}
+			
+			settings {
+				delayBetweenEvents = 200
+			}
+			
+			match name : javax.swing.JLabel {
+				val i = 0
+				true
+			}
+			'''
+		]
+	}
 }

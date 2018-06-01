@@ -16,6 +16,7 @@ import org.junit.runner.RunWith
 
 import static extension org.assertx.swing.AssertXSwingStaticExtensions.*
 import static extension org.junit.Assert.*
+import org.assertx.swing.assertXSwing.AXSMatcherRef
 
 @RunWith(XtextRunner)
 @InjectWith(AssertXSwingInjectorProvider)
@@ -117,13 +118,30 @@ class AssertXSwingParsingTest {
 		'''
 			testing javax.swing.JFrame
 			
-			matcherName match javax.swing.JButton {
+			match matcherName : javax.swing.JButton {
 				
 			}
 		'''.parse.matchers => [
 			1.assertEquals(size)
 			'matcherName'.assertEquals(head.name)
 			'javax.swing.JButton'.assertEquals(head.type.qualifiedName)
+		]
+	}
+	
+	@Test
+	def void testMatcherRef(){
+		'''
+		testing javax.swing.JFrame
+		
+		test 'a test' {
+			?matcherName?
+		}
+		
+		match matcherName : javaz.swing.JButton {
+			
+		}
+		'''.parse.tests.head.block => [
+			assertTrue((it as XBlockExpression).expressions.head instanceof AXSMatcherRef)
 		]
 	}
 }
