@@ -14,14 +14,8 @@
   <eClassifiers xsi:type="ecore:EClass" name="AXSMembers"/>
   <eClassifiers xsi:type="ecore:EClass" name="AXSTestMethod" eSuperTypes="#//AXSMembers">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="matchers" upperBound="-1"
-        eType="#//AXSMatcherRef" containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="block" eType="ecore:EClass platform:/resource/org.eclipse.xtext.xbase/model/Xbase.ecore#//XExpression"
         containment="true"/>
-  </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="AXSMatcherRef">
-    <eStructuralFeatures xsi:type="ecore:EReference" name="reference" eType="#//AXSMatcher"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="variableName" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="AXSSettings" eSuperTypes="#//AXSMembers">
     <eStructuralFeatures xsi:type="ecore:EReference" name="block" eType="ecore:EClass platform:/resource/org.eclipse.xtext.xbase/model/Xbase.ecore#//XExpression"
@@ -33,5 +27,8 @@
         containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="matchingExpression" eType="ecore:EClass platform:/resource/org.eclipse.xtext.xbase/model/Xbase.ecore#//XExpression"
         containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="AXSMatcherRef" eSuperTypes="platform:/resource/org.eclipse.xtext.xbase/model/Xbase.ecore#//XExpression">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="reference" eType="#//AXSMatcher"/>
   </eClassifiers>
 </ecore:EPackage>
