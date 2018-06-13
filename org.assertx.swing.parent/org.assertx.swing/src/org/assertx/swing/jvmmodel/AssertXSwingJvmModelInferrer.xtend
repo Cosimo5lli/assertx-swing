@@ -108,7 +108,7 @@ class AssertXSwingJvmModelInferrer extends AbstractModelInferrer {
 //						static = true
 					superTypes += typeRef(GenericTypeMatcher, matcher.type)
 					members += matcher.toConstructor [
-						body = '''super(«typeRef(matcher.type.type)».class);'''
+						body = '''super(«matcher.type».class);'''
 					]
 
 					val expression = matcher.matchingExpression
