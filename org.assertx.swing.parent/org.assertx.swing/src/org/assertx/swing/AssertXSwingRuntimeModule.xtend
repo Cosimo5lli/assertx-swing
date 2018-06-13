@@ -3,12 +3,14 @@
  */
 package org.assertx.swing
 
+import org.assertx.swing.compiler.AssertXSwingCompiler
 import org.assertx.swing.typing.AssertXSwingTypeComputer
+import org.assertx.swing.util.AssertXSwingXEpressionHelper
 import org.assertx.swing.validation.AssertXSwingSyntaxErrorMessageProvider
 import org.eclipse.xtext.parser.antlr.SyntaxErrorMessageProvider
-import org.eclipse.xtext.xbase.typesystem.computation.ITypeComputer
 import org.eclipse.xtext.xbase.compiler.XbaseCompiler
-import org.assertx.swing.compiler.AssertXSwingCompiler
+import org.eclipse.xtext.xbase.typesystem.computation.ITypeComputer
+import org.eclipse.xtext.xbase.util.XExpressionHelper
 
 /**
  * Use this class to register components to be used at runtime / without the Equinox extension registry.
@@ -18,12 +20,16 @@ class AssertXSwingRuntimeModule extends AbstractAssertXSwingRuntimeModule {
 	def Class<? extends SyntaxErrorMessageProvider> bindSyntaxErrorMessageProvider() {
 		return AssertXSwingSyntaxErrorMessageProvider
 	}
-	
+
 	def Class<? extends ITypeComputer> bindITypeComputer() {
 		AssertXSwingTypeComputer
 	}
-	
+
 	def Class<? extends XbaseCompiler> bindXbaseCompiler() {
 		AssertXSwingCompiler
+	}
+
+	def Class<? extends XExpressionHelper> bindXExpressionHelper() {
+		AssertXSwingXEpressionHelper
 	}
 }

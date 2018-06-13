@@ -13,6 +13,8 @@ import org.eclipse.xtext.testing.validation.ValidationTestHelper
 import org.eclipse.xtext.xbase.XbasePackage
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.eclipse.xtext.xbase.validation.XbaseValidator
+import org.eclipse.xtext.xbase.validation.IssueCodes
 
 @RunWith(XtextRunner)
 @InjectWith(AssertXSwingInjectorProvider)
@@ -300,6 +302,31 @@ class AssertXSwingValidationTest {
 			
 		}
 		'''.parse.assertNoErrors
+	}
+	
+	@Test
+	def void testXbaseValidatesMatcherRef(){
+		val ref = '?matcherName?'
+		
+		val input = '''
+		testing javax.swing.JFrame
+		
+		test 'm1' {
+			«ref»
+		}
+		
+		match matcherName : javax.swing.JLabel {
+			true
+		}
+		'''
+		
+		input.parse.assertError(
+			AssertXSwingPackage.eINSTANCE.AXSMatcherRef,
+			IssueCodes.INVALID_INNER_EXPRESSION,
+			input.indexOf(ref),
+			ref.length,
+			"This expression is not allowed in this context, since it doesn't cause any side effects."
+		)
 	}
 
 	def private void assertDuplicate(CharSequence input, EClass type, String name, String message, Severity severity) {
