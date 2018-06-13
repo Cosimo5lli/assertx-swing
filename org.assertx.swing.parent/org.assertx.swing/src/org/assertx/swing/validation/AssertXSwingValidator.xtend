@@ -22,7 +22,7 @@ import org.eclipse.xtext.xbase.XAbstractFeatureCall
 import org.eclipse.xtext.xbase.XBlockExpression
 import org.eclipse.xtext.xbase.XbasePackage
 
-import static extension org.assertx.swing.AssertXSwingStaticExtensions.*
+import static extension org.assertx.swing.util.AssertXSwingStaticExtensions.*
 
 /**
  * This class contains custom validation rules. 
@@ -148,7 +148,7 @@ class AssertXSwingValidator extends AbstractAssertXSwingValidator {
 
 	@Check
 	def void checkThereIsOnlyOneSettingsDefinition(AXSTestCase tc) {
-		val definedSettings = tc.members.filter(AXSSettings)
+		val definedSettings = tc.allSettings
 		if (definedSettings.size > 1) {
 			for (settings : definedSettings) {
 				error(

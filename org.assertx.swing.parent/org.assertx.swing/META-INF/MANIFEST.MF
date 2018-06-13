@@ -19,17 +19,18 @@ Require-Bundle: org.eclipse.xtext,
  org.junit;bundle-version="4.12.0",
  org.assertj.swing;bundle-version="1.0.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Export-Package: org.assertx.swing.serializer,
- org.assertx.swing.scoping,
- org.assertx.swing,
- org.assertx.swing.assertXSwing.util,
+Export-Package: org.assertx.swing,
  org.assertx.swing.assertXSwing,
+ org.assertx.swing.assertXSwing.impl,
+ org.assertx.swing.assertXSwing.util,
+ org.assertx.swing.formatting2,
+ org.assertx.swing.jvmmodel,
  org.assertx.swing.parser.antlr,
  org.assertx.swing.parser.antlr.internal,
- org.assertx.swing.validation,
- org.assertx.swing.jvmmodel,
+ org.assertx.swing.scoping,
+ org.assertx.swing.serializer,
  org.assertx.swing.services,
- org.assertx.swing.assertXSwing.impl,
- org.assertx.swing.formatting2
+ org.assertx.swing.util,
+ org.assertx.swing.validation
 Import-Package: org.apache.log4j
 Bundle-ClassPath: .

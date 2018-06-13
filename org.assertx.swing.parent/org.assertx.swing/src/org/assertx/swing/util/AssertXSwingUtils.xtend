@@ -1,4 +1,4 @@
-package org.assertx.swing
+package org.assertx.swing.util
 
 import com.google.inject.Inject
 import javax.swing.JDialog

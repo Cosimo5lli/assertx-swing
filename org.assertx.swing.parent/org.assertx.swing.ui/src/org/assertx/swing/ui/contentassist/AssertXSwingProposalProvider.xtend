@@ -22,7 +22,7 @@ import org.eclipse.xtext.ui.editor.contentassist.ContentAssistContext
 import org.eclipse.xtext.ui.editor.contentassist.ICompletionProposalAcceptor
 import org.eclipse.xtext.ui.editor.contentassist.ReplacementTextApplier
 
-import static extension org.assertx.swing.AssertXSwingStaticExtensions.*
+import static extension org.assertx.swing.util.AssertXSwingStaticExtensions.*
 
 /**
  * See https://www.eclipse.org/Xtext/documentation/304_ide_concepts.html#content-assist

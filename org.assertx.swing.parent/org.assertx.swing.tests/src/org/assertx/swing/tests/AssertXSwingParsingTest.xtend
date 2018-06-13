@@ -4,6 +4,7 @@
 package org.assertx.swing.tests
 
 import com.google.inject.Inject
+import org.assertx.swing.assertXSwing.AXSMatcherRef
 import org.assertx.swing.assertXSwing.AXSTestCase
 import org.eclipse.xtext.testing.InjectWith
 import org.eclipse.xtext.testing.XtextRunner
@@ -14,9 +15,8 @@ import org.eclipse.xtext.xbase.XVariableDeclaration
 import org.junit.Test
 import org.junit.runner.RunWith
 
-import static extension org.assertx.swing.AssertXSwingStaticExtensions.*
+import static extension org.assertx.swing.util.AssertXSwingStaticExtensions.*
 import static extension org.junit.Assert.*
-import org.assertx.swing.assertXSwing.AXSMatcherRef
 
 @RunWith(XtextRunner)
 @InjectWith(AssertXSwingInjectorProvider)
@@ -36,8 +36,7 @@ class AssertXSwingParsingTest {
 		'''
 			testing javax.swing.JFrame
 		'''.parse => [
-			settings.assertNull
-			tests.empty.assertTrue
+			members.empty.assertTrue
 		]
 	}
 
@@ -127,19 +126,19 @@ class AssertXSwingParsingTest {
 			'javax.swing.JButton'.assertEquals(head.type.qualifiedName)
 		]
 	}
-	
+
 	@Test
-	def void testMatcherRef(){
+	def void testMatcherRef() {
 		'''
-		testing javax.swing.JFrame
-		
-		test 'a test' {
-			?matcherName?
-		}
-		
-		match matcherName : javaz.swing.JButton {
+			testing javax.swing.JFrame
 			
-		}
+			test 'a test' {
+				?matcherName?
+			}
+			
+			match matcherName : javax.swing.JButton {
+				
+			}
 		'''.parse.tests.head.block => [
 			assertTrue((it as XBlockExpression).expressions.head instanceof AXSMatcherRef)
 		]

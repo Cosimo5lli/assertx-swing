@@ -10,8 +10,8 @@ import org.assertj.swing.core.Robot
 import org.assertj.swing.core.Settings
 import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
 import org.assertj.swing.edt.GuiActionRunner
-import org.assertx.swing.AssertXSwingUtils
 import org.assertx.swing.assertXSwing.AXSTestCase
+import org.assertx.swing.util.AssertXSwingUtils
 import org.eclipse.xtext.common.types.JvmDeclaredType
 import org.eclipse.xtext.common.types.JvmGenericType
 import org.eclipse.xtext.common.types.JvmVisibility
@@ -23,7 +23,7 @@ import org.junit.Before
 import org.junit.BeforeClass
 import org.junit.Test
 
-import static extension org.assertx.swing.AssertXSwingStaticExtensions.*
+import static extension org.assertx.swing.util.AssertXSwingStaticExtensions.*
 
 /**
  * <p>Infers a JVM model from the source model.</p> 

@@ -5,7 +5,7 @@ import org.eclipse.xtext.xbase.XExpression
 import org.eclipse.xtext.xbase.compiler.XbaseCompiler
 import org.eclipse.xtext.xbase.compiler.output.ITreeAppendable
 
-import static extension org.assertx.swing.AssertXSwingStaticExtensions.*
+import static extension org.assertx.swing.util.AssertXSwingStaticExtensions.*
 
 class AssertXSwingCompiler extends XbaseCompiler {
 
@@ -18,14 +18,14 @@ class AssertXSwingCompiler extends XbaseCompiler {
 				a.newLine
 				a.append('''«typeName» «name» = new «typeName»();''')
 //				a.newLine
-			} //else there's nothing to do, we reuse the same matcher, that is the same variable
+			} // else there's nothing to do, we reuse the same matcher, that is the same variable
 		} else {
 			super.doInternalToJavaStatement(expr, a, isReferenced)
 		}
 	}
-	
-	override protected internalToConvertedExpression(XExpression expr, ITreeAppendable a){
-		if(expr instanceof AXSMatcherRef){
+
+	override protected internalToConvertedExpression(XExpression expr, ITreeAppendable a) {
+		if (expr instanceof AXSMatcherRef) {
 			a.append(a.getName(expr.reference))
 		} else {
 			super.internalToConvertedExpression(expr, a)

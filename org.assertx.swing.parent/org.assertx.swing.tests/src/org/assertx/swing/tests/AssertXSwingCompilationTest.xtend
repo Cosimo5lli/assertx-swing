@@ -128,8 +128,8 @@ class AssertXSwingCompilationTest {
 				if(annotations.empty) false else Test.equals(annotations.head.annotationType)
 			].sortBy[name]
 			5.assertEquals(methods.length)
-			'_'.assertEquals(methods.get(0).name)
-			'_1234'.assertEquals(methods.get(1).name)
+			'_1234'.assertEquals(methods.get(0).name)
+			'__'.assertEquals(methods.get(1).name)
 			'itWorksYes'.assertEquals(methods.get(2).name)
 			'miXingUP'.assertEquals(methods.get(3).name)
 			'shouldIEvenWriteThis'.assertEquals(methods.get(4).name)
