@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.assertx.swing</groupId>
@@ -12,6 +13,12 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
+		<!-- this will be overridden in jacoco profile with tycho.testArgLine, 
+			which, in turn, will be set by Jacoco prepare-agent goal. This property can 
+			then be used in argLine for custom tycho-surefire configuration, both when 
+			Jacoco is used and when it is not used. -->
+		<additionalTestArgLine></additionalTestArgLine>
+		<jacoco-version>0.7.9</jacoco-version>
 	</properties>
 	<modules>
 		<module>org.assertx.swing</module>
@@ -24,7 +31,46 @@
 		<module>org.assertx.swing.ui.tests</module>
 		<module>org.assertj.swing</module>
 		<module>org.assertx.swing.tests.examplewindow</module>
+		<module>org.assertx.swing.tests.report</module>
 	</modules>
+
+	<profiles>
+		<profile>
+			<id>jacoco</id>
+			<activation>
+				<activeByDefault>false</activeByDefault>
+			</activation>
+			<properties>
+				<!-- This will be set by Jacoco prepare-agent goal -->
+				<additionalTestArgLine>${tycho.testArgLine}</additionalTestArgLine>
+			</properties>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.jacoco</groupId>
+						<artifactId>jacoco-maven-plugin</artifactId>
+						<version>${jacoco-version}</version>
+						<configuration>
+							<excludes>
+								<exclude>**/*Smoke*.class</exclude>
+								<exclude>**/*Workbench*.class</exclude>
+								<exclude>**/*ImplicitlyImportedFeatures.class</exclude>
+								<exclude>**/AXSExtension.class</exclude>
+							</excludes>
+						</configuration>
+						<executions>
+							<execution>
+								<goals>
+									<goal>prepare-agent</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+
 	<build>
 		<plugins>
 			<plugin>
@@ -241,10 +287,7 @@
 					</configuration>
 				</plugin>
 				<plugin>
-					<!-- 
-						Can be removed after first generator execution
-						https://bugs.eclipse.org/bugs/show_bug.cgi?id=480097
-					-->
+					<!-- Can be removed after first generator execution https://bugs.eclipse.org/bugs/show_bug.cgi?id=480097 -->
 					<groupId>org.eclipse.tycho</groupId>
 					<artifactId>tycho-compiler-plugin</artifactId>
 					<version>${tycho-version}</version>
