@@ -10,6 +10,7 @@ import org.assertj.swing.core.Robot
 import org.assertj.swing.core.Settings
 import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
 import org.assertj.swing.edt.GuiActionRunner
+import org.assertx.swing.assertXSwing.AXSMatcher
 import org.assertx.swing.assertXSwing.AXSTestCase
 import org.assertx.swing.util.AssertXSwingUtils
 import org.eclipse.xtext.common.types.JvmDeclaredType
@@ -70,11 +71,11 @@ class AssertXSwingJvmModelInferrer extends AbstractModelInferrer {
 	 */
 	def dispatch void infer(AXSTestCase element, IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase) {
 		// Here you explain how your model is mapped to Java elements, by writing the actual translation code.
-		val testedClass = element?.testedTypeRef?.type
-		val testingClassName = element.eResource.URI.trimFileExtension.lastSegment.toFirstUpper
+		val testedClass = element?.getTypeRef?.type
 		val fixtureType = element.fieldType
 
-		acceptor.accept(element.toClass(testingClassName)) [
+		acceptor.accept(element.toClass(element.qualifiedName)) [
+			packageName = element.package
 			members += element.toField(element.checkedFieldName, typeRef(fixtureType))
 			members += element.toMethod(BEFORE_CLASS_METHOD_NAME, typeRef(Void.TYPE)) [
 				annotations += annotationRef(BeforeClass)
@@ -104,20 +105,7 @@ class AssertXSwingJvmModelInferrer extends AbstractModelInferrer {
 			]
 
 			for (matcher : element.matchers) {
-				members += matcher.toClass(matcher.typeName) [
-//						static = true
-					superTypes += typeRef(GenericTypeMatcher, matcher.type)
-					members += matcher.toConstructor [
-						body = '''super(«matcher.type».class);'''
-					]
-
-					val expression = matcher.matchingExpression
-					members += expression.toMethod('isMatching', typeRef('boolean')) [
-						annotations += annotationRef(Override)
-						parameters += expression.toParameter('it', matcher.type)
-						body = expression
-					]
-				]
+				members += matcher.generateWithVisibility(JvmVisibility.PRIVATE)
 			}
 
 			val methodsNames = element.camelCaseMethodsNamesMappings
@@ -128,6 +116,28 @@ class AssertXSwingJvmModelInferrer extends AbstractModelInferrer {
 					body = test.block
 				]
 			}
+		]
+	}
+
+	def dispatch void infer(AXSMatcher element, IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase) {
+		acceptor.accept(element.generateWithVisibility(JvmVisibility.DEFAULT))
+	}
+
+	def generateWithVisibility(AXSMatcher matcher, JvmVisibility visib) {
+		matcher.toClass(matcher.typeName) [
+			packageName = matcher.package
+			visibility = visib
+			superTypes += typeRef(GenericTypeMatcher, matcher.getTypeRef)
+			members += matcher.toConstructor [
+				body = '''super(«matcher.getTypeRef».class);'''
+			]
+
+			val expression = matcher.matchingExpression
+			members += expression.toMethod('isMatching', typeRef('boolean')) [
+				annotations += annotationRef(Override)
+				parameters += expression.toParameter('it', matcher.getTypeRef)
+				body = expression
+			]
 		]
 	}
 

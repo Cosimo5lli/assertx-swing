@@ -27,6 +27,7 @@ import org.eclipse.xtext.ui.editor.contentassist.ICompletionProposalAcceptor
 import org.eclipse.xtext.ui.editor.contentassist.ReplacementTextApplier
 
 import static extension org.assertx.swing.util.AssertXSwingStaticExtensions.*
+import org.eclipse.xtext.common.types.TypesPackage
 
 /**
  * See https://www.eclipse.org/Xtext/documentation/304_ide_concepts.html#content-assist
@@ -53,18 +54,18 @@ class AssertXSwingProposalProvider extends AbstractAssertXSwingProposalProvider 
 				val typeProvider = typeProviderFactory.createTypeProvider(model.eResource.resourceSet)
 
 				val jFrameType = typeProvider.findTypeByName(JFrame.name)
-				createSubTypeProposal(jFrameType, context, AssertXSwingPackage.eINSTANCE.AXSTestCase_TestedTypeRef,
+				createSubTypeProposal(jFrameType, context, AssertXSwingPackage.eINSTANCE.AXSDefinable_TypeRef,
 					acceptor, filter)
 
 				val jDialogType = typeProvider.findTypeByName(JDialog.name)
-				createSubTypeProposal(jDialogType, context, AssertXSwingPackage.eINSTANCE.AXSTestCase_TestedTypeRef,
+				createSubTypeProposal(jDialogType, context, AssertXSwingPackage.eINSTANCE.AXSDefinable_TypeRef,
 					acceptor, filter)
 			}
 			AXSMatcher: {
 				val typeProvider = typeProviderFactory.createTypeProvider(model.eResource.resourceSet)
 
 				val awtComponentType = typeProvider.findTypeByName(Component.name)
-				createSubTypeProposal(awtComponentType, context, AssertXSwingPackage.eINSTANCE.AXSMatcher_Type,
+				createSubTypeProposal(awtComponentType, context, AssertXSwingPackage.eINSTANCE.AXSDefinable_TypeRef,
 					acceptor)
 			}
 			default:
@@ -101,7 +102,7 @@ class AssertXSwingProposalProvider extends AbstractAssertXSwingProposalProvider 
 			jvmType,
 			this,
 			context,
-			reference,
+			TypesPackage.eINSTANCE.jvmParameterizedTypeReference_Type,
 			TypeMatchFilters.and(filters),
 			acceptor
 		)

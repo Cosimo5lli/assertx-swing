@@ -11,7 +11,7 @@ class AssertXSwingTypeComputer extends XbaseTypeComputer {
 
 	def dispatch void computeTypes(AXSMatcherRef matcherRef, ITypeComputationState state) {
 		val matcherType = getRawTypeForName(GenericTypeMatcher, state).type
-		val parameterType = matcherRef?.reference?.type?.type
+		val parameterType = matcherRef?.reference?.typeRef?.type
 		val actualType = if (parameterType !== null && !(parameterType instanceof JvmVoid)) {
 				val owner = state.referenceOwner
 				val completeType = new ParameterizedTypeReference(owner, matcherType)

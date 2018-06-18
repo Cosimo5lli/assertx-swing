@@ -16,7 +16,7 @@ class AssertXSwingUtils {
 	@Inject CommonTypeComputationServices services
 
 	def Class<?> getFieldType(AXSTestCase tc) {
-		val typeRef = tc.testedTypeRef.toLightweightTypeRef
+		val typeRef = tc.typeRef.toLightweightTypeRef
 		return switch (typeRef) {
 			case null: Void.TYPE
 			case typeRef.isSubtypeOf(JFrame): return FrameFixture

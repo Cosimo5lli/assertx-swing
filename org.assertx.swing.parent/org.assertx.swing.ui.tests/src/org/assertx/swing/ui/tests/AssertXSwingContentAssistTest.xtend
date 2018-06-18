@@ -52,14 +52,15 @@ class AssertXSwingContentAssistTest extends AbstractContentAssistTest {
 	@Test
 	def void testCompletionInEmptyTestMethodBody() {
 		newBuilder.withDirtyState.append('''
-			testing javax.swing.JFrame
+			def Prova testing javax.swing.JFrame {
 			
-			settings {
-				
-			}
+				settings {
+					
+				}
 			
-			test 'my method' {
-				<|>
+				test 'my method' {
+					<|>
+				}
 			}
 		''').assertTextAtCursorIndicator('class', 'clone', 'do', 'emptyList', 'emptyMap', 'emptySet', 'equals', 'false',
 			'finalize', 'for', 'hashCode', 'identityEquals()', 'if', 'myMethod', 'new', 'newArrayList',
@@ -74,20 +75,21 @@ class AssertXSwingContentAssistTest extends AbstractContentAssistTest {
 	}
 
 //	@Test
-//	TODO: Understand why it proposes "Test"
+//	TODO: Understand why it proposes "Prova"
 	def void testClassUnderTestCompletion() {
 		newBuilder.withDirtyState.append('''
-			testing <|>
+			def Prova testing <|>
 		''').assertTextAtCursorIndicator('javax.swing.JDialog', 'javax.swing.JFrame')
 	}
 
 	@Test
 	def void testMethodCompletion() {
 		newBuilder.withDirtyState.append('''
-			testing javax.swing.JFrame
+			def Prova testing javax.swing.JFrame {
 			
-			test 'my method' {
-				_<|>
+				test 'my method' {
+					_<|>
+				}
 			}
 		''').assertTextAtCursorIndicator()
 	}
@@ -95,14 +97,15 @@ class AssertXSwingContentAssistTest extends AbstractContentAssistTest {
 	@Test
 	def void testMemberMethodCompletion() {
 		newBuilder.withDirtyState.append('''
-			testing javax.swing.JFrame
+			def Prova testing javax.swing.JFrame {
 			
-			settings {
-				
-			}
+				settings {
+					
+				}
 			
-			test 'my method' {
-				this.<|>
+				test 'my method' {
+					this.<|>
+				}
 			}
 		''').assertTextAtCursorIndicator(
 			'class',
@@ -125,10 +128,11 @@ class AssertXSwingContentAssistTest extends AbstractContentAssistTest {
 	@Test
 	def void testDoProposeCorrectTypesCompletingTypeReferenceOfMatchers() {
 		newBuilder.withDirtyState.append('''
-			testing javax.swing.JFrame
+			def Prova testing javax.swing.JFrame {
 			
-			match newMatcher : <|> {
-				true
+				def newMatcher match <|> {
+					true
+				}
 			}
 		''').assertAtCursorAtLeast('javax.swing.JButton', 'javax.swing.JFrame', 'javax.swing.JDialog',
 			'javax.swing.JLabel')
@@ -137,10 +141,11 @@ class AssertXSwingContentAssistTest extends AbstractContentAssistTest {
 	@Test
 	def void testNoIncompatibleProposalCompletingTypeReferenceOfMatchers() {
 		newBuilder.withDirtyState.append('''
-			testing javax.swing.JFrame
+			def Prova testing javax.swing.JFrame {
 			
-			match newMatcher : <|> {
-				true
+				match newMatcher : <|> {
+					true
+				}
 			}
 		''').assertNoProposalsAtCursor('java.lang.Double', 'java.lang.Object', 'java.lang.String')
 	}

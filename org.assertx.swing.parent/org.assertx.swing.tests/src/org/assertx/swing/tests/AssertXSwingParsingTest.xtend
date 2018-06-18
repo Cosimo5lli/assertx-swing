@@ -4,8 +4,8 @@
 package org.assertx.swing.tests
 
 import com.google.inject.Inject
+import org.assertx.swing.assertXSwing.AXSFile
 import org.assertx.swing.assertXSwing.AXSMatcherRef
-import org.assertx.swing.assertXSwing.AXSTestCase
 import org.eclipse.xtext.testing.InjectWith
 import org.eclipse.xtext.testing.XtextRunner
 import org.eclipse.xtext.testing.util.ParseHelper
@@ -22,20 +22,20 @@ import static extension org.junit.Assert.*
 @InjectWith(AssertXSwingInjectorProvider)
 class AssertXSwingParsingTest {
 
-	@Inject extension ParseHelper<AXSTestCase>
+	@Inject extension ParseHelper<AXSFile>
 
 	@Test
 	def void testRecognizedTypeRef() {
 		'''
-			testing javax.swing.JFrame
-		'''.parse => ['JFrame'.assertEquals(testedTypeRef.simpleName)]
+			def Test testing javax.swing.JFrame
+		'''.parse.testCases.head => ['JFrame'.assertEquals(typeRef.simpleName)]
 	}
 
 	@Test
 	def void testEmptyTestCase() {
 		'''
-			testing javax.swing.JFrame
-		'''.parse => [
+			def Test testing javax.swing.JFrame
+		'''.parse.testCases.head => [
 			members.empty.assertTrue
 		]
 	}
@@ -43,12 +43,13 @@ class AssertXSwingParsingTest {
 	@Test
 	def void testSettingsSection() {
 		'''
-			testing javax.swing.JFrame
+			def Test testing javax.swing.JFrame {
 			
 			settings {
 				val s = 'Hello'
 			}
-		'''.parse => [
+			}
+		'''.parse.testCases.head => [
 			settings.assertNotNull()
 			val block = (settings.block as XBlockExpression)
 			val valDec = (block.expressions.head as XVariableDeclaration)
@@ -60,12 +61,13 @@ class AssertXSwingParsingTest {
 	@Test
 	def void testEmptyMethodDeclaration() {
 		'''
-			testing javax.swing.JFrame
+			def Test testing javax.swing.JFrame {
 			
 			test 'Empty test method' {
 				
 			}
-		'''.parse => [
+			}
+		'''.parse.testCases.head => [
 			'Empty test method'.assertEquals(tests.head.name)
 			(tests.head.block as XBlockExpression).expressions.empty.assertTrue
 		]
@@ -74,12 +76,13 @@ class AssertXSwingParsingTest {
 	@Test
 	def void testNonEmptyMethodDeclaration() {
 		'''
-			testing javax.swing.JFrame
+			def Test testing javax.swing.JFrame {
 			
 			test 'A test method' {
 				val s = 'World'
 			}
-		'''.parse => [
+			}
+		'''.parse.testCases.head => [
 			'A test method'.assertEquals(tests.head.name)
 			(tests.head.block as XBlockExpression).expressions.empty.assertFalse
 		]
@@ -88,13 +91,14 @@ class AssertXSwingParsingTest {
 	@Test
 	def void testUnnamedMethod() {
 		'''
-			testing javax.swing.JFrame
+			def Test testing javax.swing.JFrame {
 			
 			test {
 				val n = null
 			}
-		'''.parse => [
-			'JFrame'.assertEquals(testedTypeRef.simpleName)
+			}
+		'''.parse.testCases.head => [
+			'JFrame'.assertEquals(typeRef.simpleName)
 			1.assertEquals(tests.length)
 			tests.head.name.assertNull
 			tests.head.assertNotNull()
@@ -105,8 +109,8 @@ class AssertXSwingParsingTest {
 	@Test
 	def void testCustomFieldName() {
 		'''
-			testing javax.swing.JFrame as custom
-		'''.parse => [
+			def Test testing javax.swing.JFrame as custom
+		'''.parse.testCases.head => [
 			fieldName.assertNotNull
 			'custom'.assertEquals(fieldName)
 		]
@@ -115,31 +119,33 @@ class AssertXSwingParsingTest {
 	@Test
 	def void testMatcherParsing() {
 		'''
-			testing javax.swing.JFrame
+			def Test testing javax.swing.JFrame {
 			
-			match matcherName : javax.swing.JButton {
+			def matcherName match javax.swing.JButton {
 				
 			}
-		'''.parse.matchers => [
+			}
+		'''.parse.testCases.head.getMatchers => [
 			1.assertEquals(size)
 			'matcherName'.assertEquals(head.name)
-			'javax.swing.JButton'.assertEquals(head.type.qualifiedName)
+			'javax.swing.JButton'.assertEquals(head.typeRef.qualifiedName)
 		]
 	}
 
 	@Test
 	def void testMatcherRef() {
 		'''
-			testing javax.swing.JFrame
+			def Test testing javax.swing.JFrame {
 			
 			test 'a test' {
 				?matcherName?
 			}
 			
-			match matcherName : javax.swing.JButton {
+			def matcherName match javax.swing.JButton {
 				
 			}
-		'''.parse.tests.head.block => [
+			}
+		'''.parse.testCases.head.tests.head.block => [
 			assertTrue((it as XBlockExpression).expressions.head instanceof AXSMatcherRef)
 		]
 	}

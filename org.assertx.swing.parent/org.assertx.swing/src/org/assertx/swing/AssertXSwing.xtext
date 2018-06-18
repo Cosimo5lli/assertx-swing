@@ -5,10 +5,20 @@ generate assertXSwing "http://www.assertx.org/swing/AssertXSwing"
 import "http://www.eclipse.org/xtext/common/JavaVMTypes" as types
 import "http://www.eclipse.org/xtext/xbase/Xbase"
 
-AXSTestCase:
-	'testing' testedTypeRef=JvmParameterizedTypeReference ('as' fieldName=ID)?
+AXSFile:
+    ('package' packName=QualifiedName)?
 	imports=XImportSection?
+	(definitions+=AXSDefinable)*
+;
+
+AXSDefinable:
+    AXSTestCase | AXSMatcher
+;
+
+AXSTestCase:
+	'def' name=ValidID 'testing' typeRef=JvmParameterizedTypeReference ('as' fieldName=ID)? '{'
 	members+=AXSMembers*
+	'}'
 ;
 
 AXSMembers:
@@ -35,5 +45,9 @@ AXSSettings:
 ;
 
 AXSMatcher:
-	'match' name=ValidID ':' type=JvmParameterizedTypeReference matchingExpression=XBlockExpression
+	'def' name=ValidID 'match' typeRef=JvmParameterizedTypeReference matchingExpression=XBlockExpression
+;
+
+AXSNamed:
+    AXSDefinable | AXSTestMethod
 ;

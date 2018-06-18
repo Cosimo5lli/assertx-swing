@@ -27,9 +27,11 @@ class AssertXSwingCompilationTest {
 	@Test
 	def void testEmptyTestCase() {
 		'''
-			testing «ExampleJFrame.canonicalName»
+			def Prova testing «ExampleJFrame.canonicalName»
 		'''.assertCompilesTo(
 			'''
+			package MyFile;
+			
 			import org.assertj.swing.edt.FailOnThreadViolationRepaintManager;
 			import org.assertj.swing.edt.GuiActionRunner;
 			import org.assertj.swing.fixture.FrameFixture;
@@ -39,7 +41,7 @@ class AssertXSwingCompilationTest {
 			import org.junit.BeforeClass;
 			
 			@SuppressWarnings("all")
-			public class MyFile {
+			public class Prova {
 			  private FrameFixture window;
 			  
 			  @BeforeClass
@@ -64,11 +66,14 @@ class AssertXSwingCompilationTest {
 	@Test
 	def void testSettingsSectionGeneration() {
 		'''
-		testing «ExampleJFrame.canonicalName»
+		def Prova testing «ExampleJFrame.canonicalName» {
 		
 		settings {
 			delayBetweenEvents(200)
+		}
 		}'''.assertCompilesTo('''
+			package MyFile;
+			
 			import org.assertj.swing.core.BasicRobot;
 			import org.assertj.swing.core.Robot;
 			import org.assertj.swing.core.Settings;
@@ -81,7 +86,7 @@ class AssertXSwingCompilationTest {
 			import org.junit.BeforeClass;
 			
 			@SuppressWarnings("all")
-			public class MyFile {
+			public class Prova {
 			  private FrameFixture window;
 			  
 			  @BeforeClass
@@ -112,17 +117,18 @@ class AssertXSwingCompilationTest {
 	@Test
 	def void testMethodNameTranslation() {
 		'''
-			testing «ExampleJFrame.canonicalName»
+			def Prova testing «ExampleJFrame.canonicalName» {
 			
 			test '1234' {}
 			
 			test 'should i even write this?' {}
 			
-			test "It works!?! Yes!"
+			test "It works!?! Yes!" {}
 			
-			test 'MiX(i)ng uP'
+			test 'MiX(i)ng uP'{}
 			
-			test ',.-@##+'
+			test ',.-@##+'{}
+			}
 		'''.compile [
 			val methods = compiledClass.methods.filter [
 				if(annotations.empty) false else Test.equals(annotations.head.annotationType)
@@ -139,12 +145,15 @@ class AssertXSwingCompilationTest {
 	@Test
 	def void testNullMethodNameTranslation() {
 		'''
-			testing «ExampleJFrame.canonicalName»
+			def Prova testing «ExampleJFrame.canonicalName» {
 			
 			test {}
+			}
 		'''.compile [
 			1.assertEquals(errorsAndWarnings.size)
 			'''
+				package MyFile;
+				
 				import org.assertj.swing.edt.FailOnThreadViolationRepaintManager;
 				import org.assertj.swing.edt.GuiActionRunner;
 				import org.assertj.swing.fixture.FrameFixture;
@@ -154,7 +163,7 @@ class AssertXSwingCompilationTest {
 				import org.junit.BeforeClass;
 				
 				@SuppressWarnings("all")
-				public class MyFile {
+				public class Prova {
 				  private FrameFixture window;
 				  
 				  @BeforeClass
@@ -180,7 +189,7 @@ class AssertXSwingCompilationTest {
 	@Test
 	def void testMethodNamesCollisions() {
 		'''
-			testing «ExampleJFrame.canonicalName»
+			def Prova testing «ExampleJFrame.canonicalName» {
 			
 			test 'first method' {}
 			
@@ -193,7 +202,10 @@ class AssertXSwingCompilationTest {
 			test 'firstMethod' {}
 			
 			test 'First è%#@ me]thod' {}
+			}
 		'''.assertCompilesTo('''
+			package MyFile;
+			
 			import org.assertj.swing.edt.FailOnThreadViolationRepaintManager;
 			import org.assertj.swing.edt.GuiActionRunner;
 			import org.assertj.swing.fixture.FrameFixture;
@@ -204,7 +216,7 @@ class AssertXSwingCompilationTest {
 			import org.junit.Test;
 			
 			@SuppressWarnings("all")
-			public class MyFile {
+			public class Prova {
 			  private FrameFixture window;
 			  
 			  @BeforeClass
@@ -253,13 +265,16 @@ class AssertXSwingCompilationTest {
 	@Test
 	def void testCustomFieldName() {
 		'''
-			testing «ExampleJFrame.canonicalName» as field
+			def Prova testing «ExampleJFrame.canonicalName» as field {
 			
 			test 'method' {
 				field.textBox('textToCopy').deleteText
 			}
+			}
 		'''.assertCompilesTo(
 			'''
+				package MyFile;
+				
 				import org.assertj.swing.edt.FailOnThreadViolationRepaintManager;
 				import org.assertj.swing.edt.GuiActionRunner;
 				import org.assertj.swing.fixture.FrameFixture;
@@ -270,7 +285,7 @@ class AssertXSwingCompilationTest {
 				import org.junit.Test;
 				
 				@SuppressWarnings("all")
-				public class MyFile {
+				public class Prova {
 				  private FrameFixture field;
 				  
 				  @BeforeClass
@@ -301,7 +316,7 @@ class AssertXSwingCompilationTest {
 	@Test
 	def void testGeneratedClassNameAlwaysStartsWithUpperCase() {
 		val resourceset = resourceSet('lowerCaseFile.assertxs' -> '''
-			testing javax.swing.JFrame
+			def Prova testing javax.swing.JFrame
 		''')
 
 		resourceset.compile [
@@ -317,12 +332,15 @@ class AssertXSwingCompilationTest {
 	@Test
 	def void testMatcherCompilesToInnerClass() {
 		'''
-			testing javax.swing.JFrame
+			def Prova testing javax.swing.JFrame {
 			
-			match isEmptyLabel : javax.swing.JLabel {
+			def isEmptyLabel match javax.swing.JLabel {
 				it.getText.length == 0
 			}
+			}
 		'''.assertCompilesTo('''
+			package MyFile;
+			
 			import javax.swing.JFrame;
 			import javax.swing.JLabel;
 			import org.assertj.swing.core.GenericTypeMatcher;
@@ -334,7 +352,7 @@ class AssertXSwingCompilationTest {
 			import org.junit.BeforeClass;
 			
 			@SuppressWarnings("all")
-			public class MyFile {
+			public class Prova {
 			  private FrameFixture window;
 			  
 			  @BeforeClass
@@ -353,7 +371,7 @@ class AssertXSwingCompilationTest {
 			    this.window.cleanUp();
 			  }
 			  
-			  public class IsEmptyLabel extends GenericTypeMatcher<JLabel> {
+			  private class IsEmptyLabel extends GenericTypeMatcher<JLabel> {
 			    public IsEmptyLabel() {
 			      super(JLabel.class);
 			    }
@@ -371,21 +389,24 @@ class AssertXSwingCompilationTest {
 	@Test
 	def void testMatcherUsage() {
 		'''
-			testing javax.swing.JFrame
+			def Prova testing javax.swing.JFrame {
 			
 			test 'm' {
 				window.button(?isMatch?)
 				window.textBox(?noLabel?)
 			}
 			
-			match isMatch : javax.swing.JButton {
+			def isMatch match javax.swing.JButton {
 				true
 			}
 			
-			match noLabel : javax.swing.JLabel {
+			def noLabel match javax.swing.JLabel {
 				false
 			}
+			}
 		'''.assertCompilesTo('''
+			package MyFile;
+			
 			import javax.swing.JButton;
 			import javax.swing.JFrame;
 			import javax.swing.JLabel;
@@ -399,7 +420,7 @@ class AssertXSwingCompilationTest {
 			import org.junit.Test;
 			
 			@SuppressWarnings("all")
-			public class MyFile {
+			public class Prova {
 			  private FrameFixture window;
 			  
 			  @BeforeClass
@@ -418,7 +439,7 @@ class AssertXSwingCompilationTest {
 			    this.window.cleanUp();
 			  }
 			  
-			  public class IsMatch extends GenericTypeMatcher<JButton> {
+			  private class IsMatch extends GenericTypeMatcher<JButton> {
 			    public IsMatch() {
 			      super(JButton.class);
 			    }
@@ -429,7 +450,7 @@ class AssertXSwingCompilationTest {
 			    }
 			  }
 			  
-			  public class NoLabel extends GenericTypeMatcher<JLabel> {
+			  private class NoLabel extends GenericTypeMatcher<JLabel> {
 			    public NoLabel() {
 			      super(JLabel.class);
 			    }
@@ -454,9 +475,9 @@ class AssertXSwingCompilationTest {
 	@Test
 	def void testMatcherRefReuseExistingVariable() {
 		'''
-			testing javax.swing.JFrame
+			def Prova testing javax.swing.JFrame {
 			
-			match aMatch : javax.swing.JLabel {
+			def aMatch match javax.swing.JLabel {
 				false
 			}
 			
@@ -464,7 +485,10 @@ class AssertXSwingCompilationTest {
 				window.label(?aMatch?)
 				window.label(?aMatch?)
 			}
+			}
 		'''.assertCompilesTo('''
+			package MyFile;
+			
 			import javax.swing.JFrame;
 			import javax.swing.JLabel;
 			import org.assertj.swing.core.GenericTypeMatcher;
@@ -477,7 +501,7 @@ class AssertXSwingCompilationTest {
 			import org.junit.Test;
 			
 			@SuppressWarnings("all")
-			public class MyFile {
+			public class Prova {
 			  private FrameFixture window;
 			  
 			  @BeforeClass
@@ -496,7 +520,7 @@ class AssertXSwingCompilationTest {
 			    this.window.cleanUp();
 			  }
 			  
-			  public class AMatch extends GenericTypeMatcher<JLabel> {
+			  private class AMatch extends GenericTypeMatcher<JLabel> {
 			    public AMatch() {
 			      super(JLabel.class);
 			    }
@@ -525,13 +549,14 @@ class AssertXSwingCompilationTest {
 	// and seems more like an heavy integration test
 	def void testJUnitTestCaseInstantiation() {
 		'''
-			testing «ExampleJFrame.canonicalName»
+			def Prova testing «ExampleJFrame.canonicalName» {
 			
 			test 'First test' {
 				window.textBox('textToCopy').deleteText
 				window.textBox('textToCopy').enterText('Hello!')
 				window.button('copyButton').click
 				window.label('copiedText').requireText('Hello!')
+			}
 			}
 		'''.compile [
 			val result = JUnitCore.runClasses(compiledClass)

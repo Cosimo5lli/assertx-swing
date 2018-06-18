@@ -2,6 +2,8 @@ package org.assertx.swing.util
 
 import java.util.HashMap
 import java.util.List
+import org.assertx.swing.assertXSwing.AXSDefinable
+import org.assertx.swing.assertXSwing.AXSFile
 import org.assertx.swing.assertXSwing.AXSMatcher
 import org.assertx.swing.assertXSwing.AXSMatcherRef
 import org.assertx.swing.assertXSwing.AXSSettings
@@ -9,6 +11,7 @@ import org.assertx.swing.assertXSwing.AXSTestCase
 import org.assertx.swing.assertXSwing.AXSTestMethod
 import org.assertx.swing.jvmmodel.AssertXSwingJvmModelInferrer
 import org.eclipse.xtext.EcoreUtil2
+import org.eclipse.xtext.common.types.JvmParameterizedTypeReference
 
 class AssertXSwingStaticExtensions {
 
@@ -17,7 +20,11 @@ class AssertXSwingStaticExtensions {
 	}
 
 	def static getCheckedTypeRefName(AXSTestCase tc) {
-		tc.testedTypeRef?.simpleName ?: Void.TYPE.simpleName
+		tc.typeRef.checkedTypeRefName
+	}
+	
+	def static getCheckedTypeRefName(JvmParameterizedTypeReference ref){
+		ref?.simpleName ?: Void.TYPE.simpleName
 	}
 
 	def static getSettings(AXSTestCase tc) {
@@ -100,5 +107,27 @@ class AssertXSwingStaticExtensions {
 			list += AssertXSwingJvmModelInferrer.SETTINGS_METHOD_NAME + '()'
 		}
 		return list
+	}
+
+	def static getPackage(AXSDefinable definable) {
+		val fileName = definable.eResource.URI.trimFileExtension.lastSegment
+		val declaredPackage = EcoreUtil2.getContainerOfType(definable, AXSFile).packName
+		if (declaredPackage !== null) {
+			return declaredPackage + '.' + fileName
+		} else {
+			return fileName
+		}
+	}
+
+	def static getQualifiedName(AXSDefinable definable) {
+		return definable.package + '.' + definable.name.toFirstUpper
+	}
+
+	def static getTestCases(AXSFile file) {
+		file.definitions.filter(AXSTestCase)
+	}
+
+	def static getMatchers(AXSFile file) {
+		file.definitions.filter(AXSMatcher)
 	}
 }

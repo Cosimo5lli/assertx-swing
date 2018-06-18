@@ -4,16 +4,17 @@
 package org.assertx.swing.ui.outline
 
 import com.google.inject.Inject
+import org.assertx.swing.assertXSwing.AXSFile
+import org.assertx.swing.assertXSwing.AXSMatcher
 import org.assertx.swing.assertXSwing.AXSSettings
 import org.assertx.swing.assertXSwing.AXSTestCase
 import org.assertx.swing.assertXSwing.AXSTestMethod
 import org.assertx.swing.assertXSwing.AssertXSwingPackage
 import org.assertx.swing.util.AssertXSwingUtils
-import org.eclipse.jface.viewers.StyledString
 import org.eclipse.xtext.ui.editor.outline.IOutlineNode
 import org.eclipse.xtext.ui.editor.outline.impl.DefaultOutlineTreeProvider
 import org.eclipse.xtext.ui.editor.outline.impl.DocumentRootNode
-import org.eclipse.xtext.xbase.XbasePackage
+import org.eclipse.xtext.xtype.XtypePackage
 
 import static extension org.assertx.swing.util.AssertXSwingStaticExtensions.*
 
@@ -35,27 +36,22 @@ class AssertXSwingOutlineTreeProvider extends DefaultOutlineTreeProvider {
 	}
 
 	def _createChildren(IOutlineNode parentNode, AXSTestCase tc) {
-		val testedClassString = new StyledString(tc.checkedTypeRefName, StyledString.COUNTER_STYLER)
 
 		createEStructuralFeatureNode(
 			parentNode,
 			tc,
-			AssertXSwingPackage.eINSTANCE.AXSTestCase_TestedTypeRef,
-			labelProvider.getImage(tc.testedTypeRef),
-			testedClassString,
+			AssertXSwingPackage.eINSTANCE.AXSDefinable_TypeRef,
+			labelProvider.getImage('parameter.gif'),
+			labelProvider.getText(tc.typeRef),
 			true
-		)
-
-		val styledString = new StyledString(tc.checkedFieldName).append(
-			new StyledString(': ' + tc.fieldType?.simpleName, StyledString.DECORATIONS_STYLER)
 		)
 
 		val node = createEStructuralFeatureNode(
 			parentNode,
 			tc,
 			AssertXSwingPackage.eINSTANCE.AXSTestCase_FieldName,
-			labelProvider.getImage(XbasePackage.eINSTANCE.xbaseFactory.createXVariableDeclaration),
-			styledString,
+			labelProvider.getImage('field_private_obj.gif'),
+			labelProvider.getText(tc.checkedFieldName + ' : ' + tc.fieldType?.simpleName),
 			true
 		)
 
@@ -72,11 +68,55 @@ class AssertXSwingOutlineTreeProvider extends DefaultOutlineTreeProvider {
 		for (test : tc.tests) {
 			createNode(parentNode, test)
 		}
+
+		for (matcher : tc.matchers) {
+			createNode(parentNode, matcher)
+		}
 	}
 
-	def _createChildren(DocumentRootNode rootNode, AXSTestCase tc) {
-		val fileName = tc.eResource.URI.trimFileExtension.lastSegment
-		val node = createEObjectNode(rootNode, tc, labelProvider.getImage(tc), fileName, false)
-		node.shortTextRegion = locationInFileProvider.getFullTextRegion(tc)
+	def _createChildren(IOutlineNode parentNode, AXSMatcher matcher) {
+
+		createEStructuralFeatureNode(
+			parentNode,
+			matcher,
+			AssertXSwingPackage.eINSTANCE.AXSDefinable_TypeRef,
+			labelProvider.getImage(matcher.typeRef),
+			labelProvider.getText(matcher.typeRef),
+			true
+		)
+
+	}
+
+	def _createChildren(DocumentRootNode rootNode, AXSFile file) {
+
+		if (file.packName !== null) {
+			createEStructuralFeatureNode(
+				rootNode,
+				file,
+				AssertXSwingPackage.eINSTANCE.AXSFile_PackName,
+				labelProvider.getImage(file),
+				file.packName,
+				true
+			)
+		}
+		
+		if(file.imports !== null){
+			createEStructuralFeatureNode(
+				rootNode,
+				file.imports,
+				XtypePackage.eINSTANCE.XImportSection_ImportDeclarations,
+				labelProvider.getImage(file.imports),
+				labelProvider.getText(file.imports),
+				false
+			)
+		}
+
+		for (testCase : file.testCases) {
+			createNode(rootNode, testCase)
+		}
+
+		for (matcher : file.matchers) {
+			createNode(rootNode, matcher)
+		}
 	}
 }

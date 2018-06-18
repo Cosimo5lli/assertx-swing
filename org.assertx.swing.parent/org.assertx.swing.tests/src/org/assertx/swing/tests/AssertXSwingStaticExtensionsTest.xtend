@@ -1,6 +1,8 @@
 package org.assertx.swing.tests
 
 import com.google.inject.Inject
+import org.assertx.swing.assertXSwing.AXSDefinable
+import org.assertx.swing.assertXSwing.AXSFile
 import org.assertx.swing.assertXSwing.AXSMatcher
 import org.assertx.swing.assertXSwing.AXSSettings
 import org.assertx.swing.assertXSwing.AXSTestCase
@@ -18,32 +20,33 @@ import static extension org.junit.Assert.*
 @InjectWith(AssertXSwingInjectorProvider)
 class AssertXSwingStaticExtensionsTest {
 
-	@Inject extension ParseHelper<AXSTestCase>
+	@Inject extension ParseHelper<AXSFile>
 
 	@Test
 	def void testMemberFilteringByType() {
 		'''
-			testing javax.swing.JFrame
+			def Test testing javax.swing.JFrame {
 			
-			test 'method' {
+				test 'method' {
+					
+				}
 				
-			}
-			
-			settings {
-			}
-			
-			test 'second' {
+				settings {
+				}
 				
-			}
-			
-			match aMatcher : javax.swing.JLabel {
+				test 'second' {
+					
+				}
 				
-			}
-			
-			match anotherOne : javax.swing.JTextBox {
+				def aMatcher match javax.swing.JLabel {
+					
+				}
 				
+				def anotherOne match javax.swing.JTextBox {
+					
+				}
 			}
-		'''.parse => [
+		'''.parse.testCases.head => [
 			(settings instanceof AXSSettings).assertTrue
 			settings.assertNotNull
 			2.assertEquals(tests.size)
@@ -62,8 +65,8 @@ class AssertXSwingStaticExtensionsTest {
 	@Test
 	def void testFieldNameGetterEmptyName() {
 		'''
-			testing javax.swing.JFrame
-		'''.parse => [
+			def Test testing javax.swing.JFrame
+		'''.parse.testCases.head => [
 			'window'.assertEquals(checkedFieldName)
 		]
 	}
@@ -71,8 +74,8 @@ class AssertXSwingStaticExtensionsTest {
 	@Test
 	def void testFieldNameGetter() {
 		'''
-			testing javax.swing.JFrame as myFrame
-		'''.parse => [
+			def Test testing javax.swing.JFrame as myFrame
+		'''.parse.testCases.head => [
 			'myFrame'.assertEquals(checkedFieldName)
 		]
 	}
@@ -80,14 +83,14 @@ class AssertXSwingStaticExtensionsTest {
 	@Test
 	def void testGetterForTypeUnderTest() {
 		'''
-			testing javax.swing.JFrame
-		'''.parse => [
+			def Test testing javax.swing.JFrame
+		'''.parse.testCases.head => [
 			'JFrame'.assertEquals(checkedTypeRefName)
 		]
 
 		'''
-			testing String
-		'''.parse => [
+			def Test testing String
+		'''.parse.testCases.head => [
 			'String'.assertEquals(checkedTypeRefName)
 		]
 	}
@@ -95,8 +98,8 @@ class AssertXSwingStaticExtensionsTest {
 	@Test
 	def void testGetterForTypeUnderTestWithEmptyReference() {
 		'''
-			testing 
-		'''.parse => [
+			def Test testing 
+		'''.parse.testCases.head => [
 			'void'.assertEquals(checkedTypeRefName)
 		]
 	}
@@ -104,49 +107,53 @@ class AssertXSwingStaticExtensionsTest {
 	@Test
 	def void testNamesMappingsGeneration() {
 		'''
-			testing Object
+			def Test testing Object {
 			
 			test 'name 1' {}
 			
 			test 'name two' {}
 			
 			test 'Name Up' {}
-		'''.parse.assertNamesMappings('name1, nameTwo, nameUp')
+			}
+		'''.parse.testCases.head.assertNamesMappings('name1, nameTwo, nameUp')
 	}
 
 	@Test
 	def void testNamesMappingsGenerationEmptyOrInvalidCharacters_1() {
 		'''
-			testing Object
+			def Test testing Object{
 			
 			test '' {}
 			
 			test '+*1  me.tho d' {}
-		'''.parse.assertNamesMappings('__, _1MethoD')
+			}
+		'''.parse.testCases.head.assertNamesMappings('__, _1MethoD')
 	}
 
 	@Test
 	def void testNamesMappingsGenerationEmptyOrInvalidCharacters_2() {
 		'''
-			testing Object
+			def Test testing Object{
 			
 			test '/*-+' {}
 			
 			test '1234' {}
-		'''.parse.assertNamesMappings('__, _1234')
+			}
+		'''.parse.testCases.head.assertNamesMappings('__, _1234')
 	}
 
 	@Test
 	def void testSameTestCaseGenerateEqualsButNotSameMappings() {
 		'''
-			testing Object
+			def Test testing Object {
 			
 			test 'first name' {}
 			
 			test 'second name' {}
 			
 			test 'third name' {}
-		'''.parse => [
+			}
+		'''.parse.testCases.head => [
 			val first = camelCaseMethodsNamesMappings
 			val second = camelCaseMethodsNamesMappings
 			first.assertEquals(second)
@@ -157,18 +164,20 @@ class AssertXSwingStaticExtensionsTest {
 	@Test
 	def void testEqualTestCasesGenerateDifferentMappingsWithSameNames() {
 		val first = '''
-			testing Object
+			def Test testing Object {
 			
 			test 'first name' {}
 			test 'second name' {}
-		'''.parse.camelCaseMethodsNamesMappings
+			}
+		'''.parse.testCases.head.camelCaseMethodsNamesMappings
 
 		val second = '''
-			testing Object
+			def Test testing Object {
 			
 			test 'first name' {}
 			test 'second name' {}
-		'''.parse.camelCaseMethodsNamesMappings
+			}
+		'''.parse.testCases.head.camelCaseMethodsNamesMappings
 
 		first.assertNotEquals(second)
 		first.values.sort.toString.assertEquals(second.values.sort.toString)
@@ -182,29 +191,32 @@ class AssertXSwingStaticExtensionsTest {
 	@Test
 	def void testGeneratedMethodsListOnTestCaseWithoutSettings() {
 		'''
-			testing Object
-		'''.parse.assertGeneratedMethods('_beforeClass, _setup, _cleanUp, _beforeClass(), _setup(), _cleanUp()')
+			def Test testing Object
+		'''.parse.testCases.head.assertGeneratedMethods(
+			'_beforeClass, _setup, _cleanUp, _beforeClass(), _setup(), _cleanUp()')
 	}
 
 	@Test
 	def void testGeneratedMethodsListOnTestCaseWithSettings() {
 		'''
-			testing Object
+			def Test testing Object {
 			
 			settings {}
-		'''.parse.assertGeneratedMethods(
+			}
+		'''.parse.testCases.head.assertGeneratedMethods(
 			'_beforeClass, _setup, _cleanUp, _beforeClass(), _setup(), _cleanUp(), _customizeSettings, _customizeSettings()')
 	}
 
 	@Test
 	def void testRemoveSettingsRemoveAllSettings() {
 		'''
-			testing Object
+			def Test testing Object {
 			
 			settings {}
 			
 			settings {}
-		'''.parse => [
+			}
+		'''.parse.testCases.head => [
 			2.assertEquals(members.size)
 			removeSettings
 			members.empty.assertTrue
@@ -214,14 +226,15 @@ class AssertXSwingStaticExtensionsTest {
 	@Test
 	def void testRemoveSettingsOnlyRemovesSettings() {
 		'''
-			testing Object
+			def Test testing Object {
 			
 			settings {}
 			
 			test 'test' {}
 			
-			match matcher : Object {}
-		'''.parse => [
+			def matcher match Object {}
+			}
+		'''.parse.testCases.head => [
 			3.assertEquals(members.size)
 			val settings = members.get(0)
 			val test = members.get(1)
@@ -238,14 +251,15 @@ class AssertXSwingStaticExtensionsTest {
 	@Test
 	def void testRemoveOtherSettingsAndKeepThisOneActuallyRemoveOtherSettingsButKeepsThisOne() {
 		'''
-			testing Object
+			def Test testing Object {
 			
 			settings {}
 			
 			settings {}
 			
 			settings {}
-		'''.parse => [
+			}
+		'''.parse.testCases.head => [
 			val settings = members.get(1) as AXSSettings
 			settings.removeOtherSettingsAndKeepThisOne
 			1.assertEquals(members.size)
@@ -256,7 +270,7 @@ class AssertXSwingStaticExtensionsTest {
 	@Test
 	def void testRemoveOtherSettingsAndKeepThisOneDontModifyPositionOfSettings() {
 		'''
-			testing Object
+			def Test testing Object {
 			
 			test '1' {}
 			
@@ -265,7 +279,8 @@ class AssertXSwingStaticExtensionsTest {
 			settings {}
 			
 			test '2' {}
-		'''.parse => [
+			}
+		'''.parse.testCases.head => [
 			4.assertEquals(members.size)
 			val settings = settings
 			settings.removeOtherSettingsAndKeepThisOne
@@ -277,14 +292,15 @@ class AssertXSwingStaticExtensionsTest {
 	@Test
 	def void testRemoveOtherSettingsAndKeepThisOneDontExceedIndexConstraints() {
 		'''
-			testing Object
+			def Test testing Object {
 			
 			settings {}
 			
 			test '1' {}
 			
 			settings {}
-		'''.parse => [
+			}
+		'''.parse.testCases.head => [
 			3.assertEquals(members.size)
 			val settings = members.last as AXSSettings
 			settings.removeOtherSettingsAndKeepThisOne
@@ -296,16 +312,99 @@ class AssertXSwingStaticExtensionsTest {
 	@Test
 	def void testRemoveOtherSettingsAndKeepThisOneOnlyRemovesSettings() {
 		'''
-			testing Object
+			def Test testing Object {
 			
 			test '' {}
 			settings {}
-			match m : Object {}
-		'''.parse => [
+			def m match Object {}
+			}
+		'''.parse.testCases.head => [
 			3.assertEquals(members.size)
 			settings.removeOtherSettingsAndKeepThisOne
 			3.assertEquals(members.size)
 		]
+	}
+
+	@Test
+	def void testGetPackageOnTestCase() {
+		'''
+			def Test testing Object {}
+		'''.parse.definitions.head.assertPackage
+	}
+
+	@Test
+	def void testGetPackageOnMatcher_1() {
+		'''
+			def matcher match Object {}
+		'''.parse.definitions.head.assertPackage
+	}
+
+	@Test
+	def void testGetPackageOnMatcher_2() {
+		'''
+			def Test testing Object {
+				def matcher match Object {}
+			}
+		'''.parse.testCases.head.matchers.head.assertPackage
+	}
+
+	@Test
+	def void testGetQualifiedNameOnTestCase() {
+		'''
+			def Test testing Object {}
+		'''.parse.definitions.head.assertQualifiedName
+	}
+
+	@Test
+	def void testGetQualifiedNameOnMatcher_1() {
+		'''
+			def Test match Object {}
+		'''.parse.definitions.head.assertQualifiedName
+	}
+
+	@Test
+	def void testGetQualifiedNameOnMatcher_2() {
+		'''
+			def Test testing Object {
+				def Test match Object
+			}
+		'''.parse.testCases.head.matchers.head.assertQualifiedName
+	}
+
+	@Test
+	def void testGetTestCases() {
+		'''
+			def Test testing Object {}
+			
+			def Test2 testing Object {}
+			
+			def Test3 testing Object {}
+		'''.parse => [
+			definitions.elementsEqual(testCases).assertTrue
+		]
+	}
+
+	@Test
+	def void testGetTestCasesReturnsAllAndOnlyTestCases() {
+		'''
+			def Test testing Object {}
+			
+			def matcher match Object {}
+			
+			def Test2 testing Object {}
+		'''.parse => [
+			2.assertEquals(testCases.size)
+			definitions.filter(AXSTestCase).elementsEqual(testCases).assertTrue
+		]
+	}
+
+	def void assertQualifiedName(AXSDefinable definable) {
+		'__synthetic0.Test'.assertEquals(definable.qualifiedName)
+	}
+
+	def void assertPackage(AXSDefinable definable) {
+		// the filename given by the ParseHelper
+		'__synthetic0'.assertEquals(definable.package)
 	}
 
 	def private void assertGeneratedMethods(AXSTestCase testCase, String expected) {
