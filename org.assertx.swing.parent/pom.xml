@@ -13,13 +13,38 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
-		<!-- this will be overridden in jacoco profile with tycho.testArgLine, 
-			which, in turn, will be set by Jacoco prepare-agent goal. This property can 
-			then be used in argLine for custom tycho-surefire configuration, both when 
-			Jacoco is used and when it is not used. -->
-		<additionalTestArgLine></additionalTestArgLine>
-		<jacoco-version>0.7.9</jacoco-version>
+		<sonar.language>java</sonar.language>
+		<!-- Always refer to the corresponding tests project (if it exists) otherwise 
+			Sonarqube won't be able to collect code coverage. For example, when analyzing 
+			project foo it wouldn't find code coverage information if it doesn't use 
+			foo.tests jacoco.exec. -->
+		<sonar.jacoco.reportPaths>
+			../${project.artifactId}.tests/target/jacoco.exec
+		</sonar.jacoco.reportPaths>
+		<!-- Skipping code coverage (comma separated Java files). Firstly, due 
+			to the fact that projects are nested within org.assertx.swing.parent we have 
+			to exclude every project, or Sonarqube will complain about duplicates. Then 
+			there are meaningful exclusions. -->
+		<sonar.exclusions>
+			**/src-gen/**,
+			**/xtend/**,
+			**/*RuntimeModule.java,
+			**/*UiModule.java,
+			**/*StandaloneSetup*.java,
+			**/*Activator.java
+		</sonar.exclusions>
+		<sonar.tests.exclusions>
+			**/src-gen/**,
+			**/xtend/**,
+			**/*RuntimeModule.java,
+			**/*UiModule.java,
+			**/*StandaloneSetup*.java,
+			**/*Activator.java
+		</sonar.tests.exclusions>
+		<!-- <sonar.coverage.exclusions>${sonar.exclusions}</sonar.coverage.exclusions> -->
+		<!-- <ant.directory>${assertx.swing.basedir}/ant</ant.directory> -->
 	</properties>
+
 	<modules>
 		<module>org.assertx.swing</module>
 		<module>org.assertx.swing.ide</module>
@@ -33,43 +58,6 @@
 		<module>org.assertx.swing.tests.examplewindow</module>
 		<module>org.assertx.swing.tests.report</module>
 	</modules>
-
-	<profiles>
-		<profile>
-			<id>jacoco</id>
-			<activation>
-				<activeByDefault>false</activeByDefault>
-			</activation>
-			<properties>
-				<!-- This will be set by Jacoco prepare-agent goal -->
-				<additionalTestArgLine>${tycho.testArgLine}</additionalTestArgLine>
-			</properties>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.jacoco</groupId>
-						<artifactId>jacoco-maven-plugin</artifactId>
-						<version>${jacoco-version}</version>
-						<configuration>
-							<excludes>
-								<exclude>**/*Smoke*.class</exclude>
-								<exclude>**/*Workbench*.class</exclude>
-								<exclude>**/*ImplicitlyImportedFeatures.class</exclude>
-								<exclude>**/AXSExtension.class</exclude>
-							</excludes>
-						</configuration>
-						<executions>
-							<execution>
-								<goals>
-									<goal>prepare-agent</goal>
-								</goals>
-							</execution>
-						</executions>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-	</profiles>
 
 	<build>
 		<plugins>

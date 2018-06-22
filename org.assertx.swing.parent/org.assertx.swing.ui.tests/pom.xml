@@ -1,10 +1,12 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.assertx.swing</groupId>
-		<artifactId>org.assertx.swing.parent</artifactId>
+		<artifactId>org.assertx.swing.tests.parent</artifactId>
 		<version>1.0.0-SNAPSHOT</version>
+		<relativePath>../org.assertx.swing.tests.parent</relativePath>
 	</parent>
 	<artifactId>org.assertx.swing.ui.tests</artifactId>
 	<packaging>eclipse-test-plugin</packaging>
@@ -31,10 +33,9 @@
 				<configuration>
 					<dependency-resolution>
 						<extraRequirements>
-							<!-- to get the org.eclipse.osgi.compatibility.state plugin
-							if the target platform is Luna or later.
-							(backward compatible with kepler and previous versions)
-							see https://bugs.eclipse.org/bugs/show_bug.cgi?id=492149 -->
+							<!-- to get the org.eclipse.osgi.compatibility.state plugin if the 
+								target platform is Luna or later. (backward compatible with kepler and previous 
+								versions) see https://bugs.eclipse.org/bugs/show_bug.cgi?id=492149 -->
 							<requirement>
 								<type>eclipse-feature</type>
 								<id>org.eclipse.rcp</id>
