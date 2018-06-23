@@ -4,18 +4,24 @@ sudo: true
 
 cache:
   directories:
-  - $HOME/.m2
+   - "$HOME/.m2"
+   - "$HOME/.sonar/cache"
 
 install: true
 
 jdk:
  - oraclejdk8
-
 env:
  - DISPLAY=:99.0
+
+addons:
+  sonarcloud:
+    organization: cosimo5lli-github
+    token:
+      secure: "IdmYv5+2Sfv/520BvSv+hax8CnynC8phpxred4pPA3gS4tUF0+92diVg2nEOrsUfsgHN8K/MjpdG4dSXJ9CIcar+TCuwrOaa9ZmeJ71zkl+XgNbvsMMchl8FomAwfZ6ngHY8XnG6XYc05ClME/pXHlSb9tPycZMlinJ6/YUq4iv0PVkUn6nf+OzIBDtVseesqZ2LffN3mLJHGTu4D+FeZxZiaRaSMtsF136xQmYQIyWScsXmFkhGz9BseoWMavC4qhVBfVT7MZ0UDPzLPVYP+URI1GGx+SJ/7rUGAVnZ2/NAtVmttqSnLyR6qNtFGt2ILBgv0fjG7id/nCCBa8hKZ9EyedBpiGvBl5sHf8pA29BsqPREgs3OmM/eNNTy+/SqDLF5ZkLqV/6dwljRFuas2SPMETNCllz7vO5GqK3YlwArMtLQTGc+jcVFcOTrA0YcF4wtCp2/1HQKsF1ArQoh/mvdPRwBE26gY2Xy5RpQd2Q99bMAiIcLnwWOlfdlxXr1PRsDhr3QBALLplhR8eqk0Qy+9o1NvQ66AsRB/MuccbjLhWmqFC0iWhUKJH8f4yLMtbcBS7p0bj2o9sfUphWB8ygxTUFwq4QuvmVJNQVSPOswixZ8EhGxyuzPe6pZVX6xwsBMkDDuheeKIU5MKayqbvfsocAzTO7fDxmBMcwJ3/c="
 
 before_script:
  - sh -e /etc/init.d/xvfb start
 
 script:
- - mvn -f org.assertx.swing.parent/pom.xml clean verify -Pjacoco
+ - mvn -f org.assertx.swing.parent/pom.xml clean verify -Pjacoco sonar:sonar
