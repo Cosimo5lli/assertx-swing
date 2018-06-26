@@ -20,8 +20,6 @@ addons:
      - sonarcloud
      - master
     organization: "cosimo5lli-github"
-    token:
-      secure: "Ska+qZHi1e+Kp+5+cJdYJyr3CYasraaNsPrn3TAHrH5LChVXVlWGxzRWv/5l7nGcu7m7o5+L7nqNXV092j5tTA8rlz7G6a9kF36v0FKOOYcBjF1adjiGBS34m8qu6Hxt6MbfXMOcg7Fgoo7FQk8frxrwSrloMx4Inkg2QgNLJHUL0jYQseKOBRuobCUCzE449Fj5TNw487v+roNcoOYD1Me+kZ5FEgVDKLa+TOF50ZWNdjuLPG4lH5Uwsrw2wTUf2jYAP0vU5Pcr4A9WRQc0vlU2P2/rFA+Gjf0PQRG0fumigdoAT0HHqlQkQkTkNk+gVeMAWXw6of0mbV7hPEqzdUZDgUbcdHvQrmCZb/VYo1AaAL+pQnTpx7QHy+Ko2LGwxTJU6ecFpjGGhWW0ZT8gJ3w3PuibMVC1HEI7rJ2OQNYjM10zmFmXEwHzIdNwaLmF5fE1q1eWPWYVhc5qrpG1UA6Y5y0mzXXiL7MsORVWIOCoXihuBFoNGOr8TWY8xlj0IN9XhftNhV9CbF4PfttRRnIhRuSq3mXCXZZ0fF5VKQ0GXb1MRoRMizKj3X6ZkUUY0eJO1mDoVvFfdpXJXSOoZHtxIIkPYhP/5wCtuywbOPD37g4qO7dJM+wAOvWpHNmH1VrSdQ4pp56qlNS2wGWoUasH2UalLkSw5wu2Iuogcpk="
 
 before_script:
  - sh -e /etc/init.d/xvfb start
