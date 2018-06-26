@@ -1,21 +1,28 @@
 language: java
 
-sudo: true
+sudo: false
 
 cache:
   directories:
-  - $HOME/.m2
+   - "$HOME/.m2"
+   - "$HOME/.sonar/cache"
 
 install: true
 
-jdk:
- - oraclejdk8
+jdk: oraclejdk8
 
 env:
  - DISPLAY=:99.0
+
+addons:
+  sonarcloud:
+    branches:
+     - sonarcloud
+     - master
+    organization: "cosimo5lli-github"
 
 before_script:
  - sh -e /etc/init.d/xvfb start
 
 script:
- - mvn -f org.assertx.swing.parent/pom.xml clean verify -Pjacoco
+ - mvn -f org.assertx.swing.parent/pom.xml clean verify -Pjacoco sonar:sonar
