@@ -16,14 +16,13 @@ class AssertXSwingFormatterTest {
 	@Test
 	def void testSettingsFormatter(){
 		assertFormatted[
-			toBeFormatted = '''testing javax.swing.JDialog settings {delayBetweenEvents = 300}'''
+			toBeFormatted = '''def Test testing javax.swing.JDialog { settings {delayBetweenEvents = 300}}'''
 			expectation = '''
-			testing javax.swing.JDialog
-			
-			settings {
-				delayBetweenEvents = 300
+			def Test testing javax.swing.JDialog {
+				settings {
+					delayBetweenEvents = 300
+				}
 			}
-			
 			'''
 		]
 	}
@@ -31,15 +30,15 @@ class AssertXSwingFormatterTest {
 	@Test
 	def void testMethodFormatter(){
 		assertFormatted[
-			toBeFormatted = '''testing javax.swing.JDialog test 'm1'{} test 'm2' {window.button.click}'''
+			toBeFormatted = '''def Test testing javax.swing.JDialog{ test 'm1'{} test 'm2' {window.button.click}}'''
 			expectation = '''
-			testing javax.swing.JDialog
+			def Test testing javax.swing.JDialog {
+				test 'm1' {
+				}
 			
-			test 'm1' {
-			}
-			
-			test 'm2' {
-				window.button.click
+				test 'm2' {
+					window.button.click
+				}
 			}
 			'''
 		]
@@ -48,22 +47,76 @@ class AssertXSwingFormatterTest {
 	@Test
 	def void testMethodFormatter2(){
 		assertFormatted[
-			toBeFormatted = '''testing javax.swing.JDialog settings{} test 'm1' {} test 'm2' {}
+			toBeFormatted = '''def Test testing javax.swing.JDialog {settings{} test 'm1' {} test 'm2' {}}
 			
 			'''
 			expectation = '''
-			testing javax.swing.JDialog
+			def Test testing javax.swing.JDialog {
+				settings {
+				}
 			
-			settings {
-			}
+				test 'm1' {
+				}
 			
-			test 'm1' {
-			}
-			
-			test 'm2' {
+				test 'm2' {
+				}
 			}
 			'''
 		]
 	}
 	
+	@Test
+	def void testMatcherFormatter(){
+		assertFormatted[
+			toBeFormatted = '''def Test testing javax.swing.JFrame{ def  name match javax.swing.JButton{}}'''
+			expectation = '''
+			def Test testing javax.swing.JFrame {
+				def name match javax.swing.JButton {
+				}
+			}
+			'''
+		]
+	}
+	
+	@Test
+	def void testFormatImportSection(){
+		assertFormatted[
+			toBeFormatted = '''
+			import javax.swing.JButton import static java.util.List def Test  testing javax.swing.JFrame{}'''
+			
+			expectation = '''
+			import javax.swing.JButton
+			import static java.util.List
+			
+			def Test testing javax.swing.JFrame {
+			}
+			'''
+		]
+	}
+	
+	@Test
+	def void testFormatCompleteTestCase(){
+		assertFormatted[
+			toBeFormatted = '''
+			import javax.swing.JButton
+			import java.util.List
+			
+			def Test testing javax.swing.JFrame {
+				test 'm1' {
+					window.button.click
+					val i = null
+				}
+			
+				settings {
+					delayBetweenEvents = 200
+				}
+			
+				def name match javax.swing.JLabel {
+					val i = 0
+					true
+				}
+			}
+			'''
+		]
+	}
 }

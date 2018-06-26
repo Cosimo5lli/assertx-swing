@@ -1,0 +1,75 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<!-- A super pom for tests projects -->
+	<parent>
+		<groupId>org.assertx.swing</groupId>
+		<artifactId>org.assertx.swing.parent</artifactId>
+		<version>1.0.0-SNAPSHOT</version>
+	</parent>
+	<artifactId>org.assertx.swing.tests.parent</artifactId>
+	<packaging>pom</packaging>
+
+	<properties>
+		<!-- this will be overridden in jacoco profile with tycho.testArgLine, 
+			which, in turn, will be set by Jacoco prepare-agent goal. This property can 
+			then be used in argLine for custom tycho-surefire configuration, both when 
+			Jacoco is used and when it is not used. -->
+		<additionalTestArgLine></additionalTestArgLine>
+		<jacoco-version>0.7.9</jacoco-version>
+
+		<!-- Workaround for https://bugs.eclipse.org/bugs/show_bug.cgi?id=397015 -->
+		<sonar.sources></sonar.sources>
+		<sonar.tests>src,xtend-gen</sonar.tests>
+	</properties>
+
+	<profiles>
+		<profile>
+			<id>jacoco</id>
+			<activation>
+				<activeByDefault>false</activeByDefault>
+			</activation>
+			<properties>
+				<!-- This will be set by Jacoco prepare-agent goal -->
+				<additionalTestArgLine>${tycho.testArgLine}</additionalTestArgLine>
+			</properties>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.jacoco</groupId>
+						<artifactId>jacoco-maven-plugin</artifactId>
+						<version>${jacoco-version}</version>
+						<executions>
+							<execution>
+								<goals>
+									<goal>prepare-agent</goal>
+								</goals>
+							</execution>
+						</executions>
+						<configuration>
+							<excludes>
+								<exclude>**/*Smoke*.class</exclude>
+								<exclude>**/*Workbench*.class</exclude>
+								<exclude>**/*ImplicitlyImportedFeatures.class</exclude>
+								<exclude>**/AXSExtension.class</exclude>
+								<exclude>**/*Activator*</exclude>
+								<exclude>**/*RuntimeModule*</exclude>
+								<exclude>**/*StandaloneSetup*</exclude>
+								<exclude>**/*Internal*</exclude>
+								<exclude>**/*Sequencer*</exclude>
+								<exclude>**/*Abstract*</exclude>
+								<exclude>**/*GrammarAccess*</exclude>
+								<exclude>**/antlr/*.*</exclude>
+								<exclude>**/internal/*.*</exclude>
+								<exclude>**/*ExtensionFactory*</exclude>
+								<exclude>**/*UiModule*</exclude>
+							</excludes>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+</project>
+ 

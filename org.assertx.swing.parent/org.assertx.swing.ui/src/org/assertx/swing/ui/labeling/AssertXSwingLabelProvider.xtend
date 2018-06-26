@@ -4,11 +4,17 @@
 package org.assertx.swing.ui.labeling
 
 import com.google.inject.Inject
+import org.assertx.swing.assertXSwing.AXSFile
+import org.assertx.swing.assertXSwing.AXSMatcher
 import org.assertx.swing.assertXSwing.AXSSettings
+import org.assertx.swing.assertXSwing.AXSTestCase
 import org.assertx.swing.assertXSwing.AXSTestMethod
 import org.eclipse.emf.edit.ui.provider.AdapterFactoryLabelProvider
 import org.eclipse.jface.viewers.StyledString
+import org.eclipse.xtext.common.types.JvmParameterizedTypeReference
 import org.eclipse.xtext.xbase.ui.labeling.XbaseLabelProvider
+
+import static extension org.assertx.swing.util.AssertXSwingStaticExtensions.getCheckedTypeRefName
 
 /**
  * Provides labels for EObjects.
@@ -21,14 +27,36 @@ class AssertXSwingLabelProvider extends XbaseLabelProvider {
 	new(AdapterFactoryLabelProvider delegate) {
 		super(delegate);
 	}
-	
-	def text(AXSTestMethod tm){
+
+	def text(AXSTestMethod tm) {
 		new StyledString(tm.name).append(
-			new StyledString(': Test', StyledString.DECORATIONS_STYLER)
+			new StyledString(' : Test', StyledString.DECORATIONS_STYLER)
 		)
 	}
-	
-	def text(AXSSettings s){
+
+	def text(AXSSettings s) {
 		new StyledString('Settings', StyledString.DECORATIONS_STYLER)
+	}
+
+	def text(AXSMatcher matcher) {
+		new StyledString(matcher.name).append(
+			new StyledString(' : Matcher', StyledString.DECORATIONS_STYLER)
+		)
+	}
+
+	def text(AXSTestCase tc) {
+		new StyledString(tc.name).append(
+			new StyledString(' : Test Case', StyledString.DECORATIONS_STYLER)
+		)
+	}
+
+	def text(JvmParameterizedTypeReference ref) {
+		new StyledString(ref.checkedTypeRefName, StyledString.COUNTER_STYLER)
+	}
+
+	def text(String s) {
+		new StyledString(s.substring(0, s.indexOf(':'))).append(
+			new StyledString(s.substring(s.indexOf(':')), StyledString.DECORATIONS_STYLER)
+		)
 	}
 }

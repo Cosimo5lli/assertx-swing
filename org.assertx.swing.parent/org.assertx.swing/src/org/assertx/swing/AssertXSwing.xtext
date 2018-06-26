@@ -2,16 +2,52 @@ grammar org.assertx.swing.AssertXSwing with org.eclipse.xtext.xbase.Xbase
 
 generate assertXSwing "http://www.assertx.org/swing/AssertXSwing"
 
+import "http://www.eclipse.org/xtext/common/JavaVMTypes" as types
+import "http://www.eclipse.org/xtext/xbase/Xbase"
+
+AXSFile:
+    ('package' packName=QualifiedName)?
+	imports=XImportSection?
+	(definitions+=AXSDefinable)*
+;
+
+AXSDefinable:
+    AXSTestCase | AXSMatcher
+;
+
 AXSTestCase:
-	'testing' testedTypeRef=JvmParameterizedTypeReference ('as' fieldName=ID)?
-	settings=AXSSettings?
-	tests+=AXSTestMethod*
+	'def' name=ValidID 'testing' typeRef=JvmParameterizedTypeReference ('as' fieldName=ID)? '{'
+	members+=AXSMembers*
+	'}'
+;
+
+AXSMembers:
+	AXSSettings | AXSTestMethod | AXSMatcher
 ;
 
 AXSTestMethod:
-	'test' name=STRING block=XBlockExpression
+	'test' name=STRING
+	block=XBlockExpression
+;
+
+AXSMatcherRef returns XExpression:
+	{AXSMatcherRef}
+	'?' reference=[AXSMatcher|ValidID] '?'
+;
+
+@Override 
+XPrimaryExpression returns XExpression:
+	AXSMatcherRef | super
 ;
 
 AXSSettings:
 	'settings' block=XBlockExpression
+;
+
+AXSMatcher:
+	'def' name=ValidID 'match' typeRef=JvmParameterizedTypeReference matchingExpression=XBlockExpression
+;
+
+AXSNamed:
+    AXSDefinable | AXSTestMethod
 ;

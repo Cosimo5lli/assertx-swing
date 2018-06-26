@@ -5,12 +5,14 @@ package org.assertx.swing.jvmmodel
 
 import com.google.inject.Inject
 import org.assertj.swing.core.BasicRobot
+import org.assertj.swing.core.GenericTypeMatcher
 import org.assertj.swing.core.Robot
 import org.assertj.swing.core.Settings
 import org.assertj.swing.edt.FailOnThreadViolationRepaintManager
 import org.assertj.swing.edt.GuiActionRunner
-import org.assertx.swing.AssertXSwingUtils
+import org.assertx.swing.assertXSwing.AXSMatcher
 import org.assertx.swing.assertXSwing.AXSTestCase
+import org.assertx.swing.util.AssertXSwingUtils
 import org.eclipse.xtext.common.types.JvmDeclaredType
 import org.eclipse.xtext.common.types.JvmGenericType
 import org.eclipse.xtext.common.types.JvmVisibility
@@ -22,8 +24,8 @@ import org.junit.Before
 import org.junit.BeforeClass
 import org.junit.Test
 
+import static extension org.assertx.swing.util.AssertXSwingStaticExtensions.*
 
-import static extension org.assertx.swing.AssertXSwingStaticExtensions.*
 /**
  * <p>Infers a JVM model from the source model.</p> 
  * 
@@ -31,7 +33,7 @@ import static extension org.assertx.swing.AssertXSwingStaticExtensions.*
  * which is generated from the source model. Other models link against the JVM model rather than the source model.</p>     
  */
 class AssertXSwingJvmModelInferrer extends AbstractModelInferrer {
-	
+
 	public static val BEFORE_CLASS_METHOD_NAME = '_beforeClass'
 	public static val BEFORE_METHOD_NAME = '_setup'
 	public static val AFTER_METHOD_NAME = '_cleanUp'
@@ -41,8 +43,9 @@ class AssertXSwingJvmModelInferrer extends AbstractModelInferrer {
 	 * convenience API to build and initialize JVM types and their members.
 	 */
 	@Inject extension JvmTypesBuilder
-	
-	@Inject	extension AssertXSwingUtils
+
+	@Inject extension AssertXSwingUtils
+
 	/**
 	 * The dispatch method {@code infer} is called for each instance of the
 	 * given element's type that is contained in a resource.
@@ -68,10 +71,11 @@ class AssertXSwingJvmModelInferrer extends AbstractModelInferrer {
 	 */
 	def dispatch void infer(AXSTestCase element, IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase) {
 		// Here you explain how your model is mapped to Java elements, by writing the actual translation code.
-		val testedClass = element?.testedTypeRef?.type
-		val testingClassName = element.eResource.URI.trimFileExtension.lastSegment
-		val fixtureType =  element.fieldType
-		acceptor.accept(element.toClass(testingClassName)) [
+		val testedClass = element?.getTypeRef?.type
+		val fixtureType = element.fieldType
+
+		acceptor.accept(element.toClass(element.qualifiedName)) [
+			packageName = element.package
 			members += element.toField(element.checkedFieldName, typeRef(fixtureType))
 			members += element.toMethod(BEFORE_CLASS_METHOD_NAME, typeRef(Void.TYPE)) [
 				annotations += annotationRef(BeforeClass)
@@ -100,12 +104,40 @@ class AssertXSwingJvmModelInferrer extends AbstractModelInferrer {
 				'''
 			]
 
+			for (matcher : element.matchers) {
+				members += matcher.generateWithVisibility(JvmVisibility.PRIVATE)
+			}
+
+			val methodsNames = element.camelCaseMethodsNamesMappings
 			for (test : element.tests) {
-				members += test.toMethod(test.camelCaseName, typeRef(Void.TYPE)) [
+				val methodName = methodsNames.get(test)
+				members += test.toMethod(methodName, typeRef(Void.TYPE)) [
 					annotations += annotationRef(Test)
 					body = test.block
 				]
 			}
+		]
+	}
+
+	def dispatch void infer(AXSMatcher element, IJvmDeclaredTypeAcceptor acceptor, boolean isPreIndexingPhase) {
+		acceptor.accept(element.generateWithVisibility(JvmVisibility.DEFAULT))
+	}
+
+	def generateWithVisibility(AXSMatcher matcher, JvmVisibility visib) {
+		matcher.toClass(matcher.typeName) [
+			packageName = matcher.package
+			visibility = visib
+			superTypes += typeRef(GenericTypeMatcher, matcher.getTypeRef)
+			members += matcher.toConstructor [
+				body = '''super(«matcher.getTypeRef».class);'''
+			]
+
+			val expression = matcher.matchingExpression
+			members += expression.toMethod('isMatching', typeRef('boolean')) [
+				annotations += annotationRef(Override)
+				parameters += expression.toParameter('it', matcher.getTypeRef)
+				body = expression
+			]
 		]
 	}
 

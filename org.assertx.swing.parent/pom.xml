@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.assertx.swing</groupId>
@@ -12,7 +13,38 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
+		<sonar.language>java</sonar.language>
+		<!-- Always refer to the corresponding tests project (if it exists) otherwise 
+			Sonarqube won't be able to collect code coverage. For example, when analyzing 
+			project foo it wouldn't find code coverage information if it doesn't use 
+			foo.tests jacoco.exec. -->
+		<sonar.jacoco.reportPaths>
+			../${project.artifactId}.tests/target/jacoco.exec
+		</sonar.jacoco.reportPaths>
+		<!-- Skipping code coverage (comma separated Java files). Firstly, due 
+			to the fact that projects are nested within org.assertx.swing.parent we have 
+			to exclude every project, or Sonarqube will complain about duplicates. Then 
+			there are meaningful exclusions. -->
+		<sonar.exclusions>
+			**/src-gen/**,
+			**/xtend/**,
+			**/*RuntimeModule.java,
+			**/*UiModule.java,
+			**/*StandaloneSetup*.java,
+			**/*Activator.java
+		</sonar.exclusions>
+		<sonar.tests.exclusions>
+			**/src-gen/**,
+			**/xtend/**,
+			**/*RuntimeModule.java,
+			**/*UiModule.java,
+			**/*StandaloneSetup*.java,
+			**/*Activator.java
+		</sonar.tests.exclusions>
+		<!-- <sonar.coverage.exclusions>${sonar.exclusions}</sonar.coverage.exclusions> -->
+		<!-- <ant.directory>${assertx.swing.basedir}/ant</ant.directory> -->
 	</properties>
+
 	<modules>
 		<module>org.assertx.swing</module>
 		<module>org.assertx.swing.ide</module>
@@ -24,7 +56,9 @@
 		<module>org.assertx.swing.ui.tests</module>
 		<module>org.assertj.swing</module>
 		<module>org.assertx.swing.tests.examplewindow</module>
+		<module>org.assertx.swing.tests.report</module>
 	</modules>
+
 	<build>
 		<plugins>
 			<plugin>
@@ -241,10 +275,7 @@
 					</configuration>
 				</plugin>
 				<plugin>
-					<!-- 
-						Can be removed after first generator execution
-						https://bugs.eclipse.org/bugs/show_bug.cgi?id=480097
-					-->
+					<!-- Can be removed after first generator execution https://bugs.eclipse.org/bugs/show_bug.cgi?id=480097 -->
 					<groupId>org.eclipse.tycho</groupId>
 					<artifactId>tycho-compiler-plugin</artifactId>
 					<version>${tycho-version}</version>

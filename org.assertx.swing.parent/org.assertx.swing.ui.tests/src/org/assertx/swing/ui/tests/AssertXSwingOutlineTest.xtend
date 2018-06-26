@@ -33,37 +33,38 @@ class AssertXSwingOutlineTest extends AbstractOutlineTest {
 	@Test
 	def void testOnlyTestedClass(){
 		'''
-		testing javax.swing.JFrame
+		def Prova testing javax.swing.JFrame {}
 		'''.assertAllLabels('''
-		test
+		Prova : Test Case
 		  JFrame
-		  window: FrameFixture
+		  window : FrameFixture
 		''')
 	}
 	
 	@Test
 	def void testCustomFieldName(){
 		'''
-		testing javax.swing.JFrame as frame
+		def Prova testing javax.swing.JFrame as frame {}
 		'''.assertAllLabels('''
-		test
+		Prova : Test Case
 		  JFrame
-		  frame: FrameFixture
+		  frame : FrameFixture
 		''')
 	}
 	
 	@Test
 	def void testSettings(){
 		'''
-		testing javax.swing.JFrame
+		def Prova testing javax.swing.JFrame {
 		
-		settings ¸{
-			
+			settings ¸{
+				
+			}
 		}
 		'''.assertAllLabels('''
-		test
+		Prova : Test Case
 		  JFrame
-		  window: FrameFixture
+		  window : FrameFixture
 		  Settings
 		''')
 	}
@@ -71,21 +72,22 @@ class AssertXSwingOutlineTest extends AbstractOutlineTest {
 	@Test
 	def void testMethodsWithoutSettings(){
 		'''
-		testing javax.swing.JFrame
+		def Prova testing javax.swing.JFrame {
 		
-		test 'my method' {
+			test 'my method' {
+				
+			}
 			
-		}
-		
-		test 'another one' {
-			
+			test 'another one' {
+				
+			}
 		}
 		'''.assertAllLabels('''
-		test
+		Prova : Test Case
 		  JFrame
-		  window: FrameFixture
-		  my method: Test
-		  another one: Test
+		  window : FrameFixture
+		  my method : Test
+		  another one : Test
 		''')
 	}
 	
@@ -97,11 +99,11 @@ class AssertXSwingOutlineTest extends AbstractOutlineTest {
 	@Test
 	def void testNullTestedTypeReference(){
 		'''
-		testing
+		def Prova testing
 		'''.assertAllLabels('''
-		test
+		Prova : Test Case
 		  void
-		  window: void
+		  window : void
 		''')
 	}
 	
@@ -119,25 +121,26 @@ class AssertXSwingOutlineTest extends AbstractOutlineTest {
 		CharSequence expectedTestedTypeName, CharSequence expectedFieldType
 	) {
 		'''
-		testing «testedTypeReference»
-		settings {
+		def Prova testing «testedTypeReference» {
+			settings {
+				
+			}
 			
-		}
-		
-		test 'm1' {
+			test 'm1' {
+				
+			}
 			
-		}
-		
-		test 'm2' {
-			
+			test 'm2' {
+				
+			}
 		}
 		'''.assertAllLabels('''
-		test
+		Prova : Test Case
 		  «expectedTestedTypeName»
-		  window: «expectedFieldType»
+		  window : «expectedFieldType»
 		  Settings
-		  m1: Test
-		  m2: Test
+		  m1 : Test
+		  m2 : Test
 		''')
 	}
 	

@@ -3,6 +3,8 @@
  */
 package org.assertx.swing.formatting2
 
+import org.assertx.swing.assertXSwing.AXSFile
+import org.assertx.swing.assertXSwing.AXSMatcher
 import org.assertx.swing.assertXSwing.AXSSettings
 import org.assertx.swing.assertXSwing.AXSTestCase
 import org.assertx.swing.assertXSwing.AXSTestMethod
@@ -13,32 +15,69 @@ import static org.assertx.swing.assertXSwing.AssertXSwingPackage.Literals.*
 
 class AssertXSwingFormatter extends XbaseFormatter {
 
-	def dispatch void format(AXSTestCase testCase, extension IFormattableDocument document) {
-		testCase.regionFor.keyword('testing').prepend[noSpace].append[oneSpace]
-		testCase.testedTypeRef.format;
-		testCase.testedTypeRef.append[newLines = 2]
-		testCase.settings.format;
-		val tests = testCase.tests
-		val last = tests.last
-		for (testMethod : tests) {
-			testMethod.format;
-			if (testMethod === last) {
-				testMethod.append[newLine]
+	def dispatch void format(AXSFile file, extension IFormattableDocument document) {
+		file.imports.format
+		file.imports.append[newLines = 2]
+		val last = file.definitions.last
+		for (definable : file.definitions) {
+			definable.format
+			if (definable === last) {
+				definable.append[newLine]
 			} else {
-				testMethod.append[newLines = 2]
+				definable.append[newLines = 2]
 			}
 		}
 	}
 
+	def dispatch void format(AXSTestCase testCase, extension IFormattableDocument document) {
+		testCase.regionFor.keyword('def').prepend[noSpace].append[oneSpace]
+		testCase.regionFor.feature(AXS_NAMED__NAME).surround[oneSpace]
+		testCase.regionFor.keyword('testing').surround[oneSpace]
+		testCase.typeRef.format;
+		if (testCase.fieldName !== null) {
+			testCase.regionFor.keyword('as').surround[oneSpace]
+			testCase.regionFor.feature(AXS_TEST_CASE__FIELD_NAME).surround[oneSpace]
+		}
+
+		val members = testCase.members
+		val open = testCase.regionFor.keyword('{')
+		val close = testCase.regionFor.keyword('}')
+		if (members.empty) {
+			open.prepend[oneSpace].append[newLine]
+		} else {
+			open.prepend[oneSpace].append[setNewLines(1, 2, 2)]
+			interior(open, close)[indent]
+
+			val last = members.last
+			for (member : members) {
+				member.format
+				if (member === last) {
+					member.append[newLine]
+				} else {
+					member.append[newLines = 2]
+				}
+			}
+		}
+		close.prepend[newLine]
+	}
+
 	def dispatch void format(AXSTestMethod testMethod, extension IFormattableDocument document) {
 		testMethod.regionFor.keyword('test').prepend[noSpace].append[oneSpace]
-		testMethod.regionFor.feature(AXS_TEST_METHOD__NAME).surround[oneSpace]
-		testMethod.getBlock.format;
+		testMethod.regionFor.feature(AXS_NAMED__NAME).surround[oneSpace]
+		testMethod.block.format;
 	}
 
 	def dispatch void format(AXSSettings settings, extension IFormattableDocument document) {
 		settings.regionFor.keyword('settings').prepend[noSpace].append[oneSpace]
 		settings.block.format
-		settings.append[newLines = 2]
+	}
+
+	def dispatch void format(AXSMatcher matcher, extension IFormattableDocument document) {
+		matcher.regionFor.keyword('def').prepend[noSpace].append[oneSpace]
+		matcher.regionFor.feature(AXS_NAMED__NAME).surround[oneSpace]
+		matcher.regionFor.keyword('match').surround[oneSpace]
+		matcher.typeRef.format
+		matcher.typeRef.surround[oneSpace]
+		matcher.matchingExpression.format
 	}
 }

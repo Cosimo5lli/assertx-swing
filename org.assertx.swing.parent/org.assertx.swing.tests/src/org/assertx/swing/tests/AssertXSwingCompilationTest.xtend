@@ -27,9 +27,11 @@ class AssertXSwingCompilationTest {
 	@Test
 	def void testEmptyTestCase() {
 		'''
-			testing «ExampleJFrame.canonicalName»
+			def Prova testing «ExampleJFrame.canonicalName»
 		'''.assertCompilesTo(
 			'''
+			package MyFile;
+			
 			import org.assertj.swing.edt.FailOnThreadViolationRepaintManager;
 			import org.assertj.swing.edt.GuiActionRunner;
 			import org.assertj.swing.fixture.FrameFixture;
@@ -39,7 +41,7 @@ class AssertXSwingCompilationTest {
 			import org.junit.BeforeClass;
 			
 			@SuppressWarnings("all")
-			public class MyFile {
+			public class Prova {
 			  private FrameFixture window;
 			  
 			  @BeforeClass
@@ -58,18 +60,20 @@ class AssertXSwingCompilationTest {
 			    this.window.cleanUp();
 			  }
 			}
-			''')
+		''')
 	}
-	
-	
+
 	@Test
-	def void testSettingsSectionGeneration(){
+	def void testSettingsSectionGeneration() {
 		'''
-		testing «ExampleJFrame.canonicalName»
+		def Prova testing «ExampleJFrame.canonicalName» {
 		
 		settings {
 			delayBetweenEvents(200)
+		}
 		}'''.assertCompilesTo('''
+			package MyFile;
+			
 			import org.assertj.swing.core.BasicRobot;
 			import org.assertj.swing.core.Robot;
 			import org.assertj.swing.core.Settings;
@@ -82,7 +86,7 @@ class AssertXSwingCompilationTest {
 			import org.junit.BeforeClass;
 			
 			@SuppressWarnings("all")
-			public class MyFile {
+			public class Prova {
 			  private FrameFixture window;
 			  
 			  @BeforeClass
@@ -107,45 +111,101 @@ class AssertXSwingCompilationTest {
 			    this.window.cleanUp();
 			  }
 			}
-			''')
+		''')
 	}
 
 	@Test
 	def void testMethodNameTranslation() {
 		'''
-			testing «ExampleJFrame.canonicalName»
+			def Prova testing «ExampleJFrame.canonicalName» {
 			
 			test '1234' {}
 			
 			test 'should i even write this?' {}
 			
-			test "It works!?! Yes!"
+			test "It works!?! Yes!" {}
 			
-			test 'MiX(i)ng uP'
+			test 'MiX(i)ng uP'{}
 			
-			test ',.-@##+'
+			test ',.-@##+'{}
+			}
 		'''.compile [
 			val methods = compiledClass.methods.filter [
 				if(annotations.empty) false else Test.equals(annotations.head.annotationType)
 			].sortBy[name]
 			5.assertEquals(methods.length)
-			'_'.assertEquals(methods.get(0).name)
-			'_1234'.assertEquals(methods.get(1).name)
+			'_1234'.assertEquals(methods.get(0).name)
+			'__'.assertEquals(methods.get(1).name)
 			'itWorksYes'.assertEquals(methods.get(2).name)
 			'miXingUP'.assertEquals(methods.get(3).name)
 			'shouldIEvenWriteThis'.assertEquals(methods.get(4).name)
 		]
 	}
-	
+
 	@Test
-	def void testNullMethodNameTranslation(){
+	def void testNullMethodNameTranslation() {
 		'''
-		testing «ExampleJFrame.canonicalName»
-		
-		test {}
-		'''.compile[
+			def Prova testing «ExampleJFrame.canonicalName» {
+			
+			test {}
+			}
+		'''.compile [
 			1.assertEquals(errorsAndWarnings.size)
 			'''
+				package MyFile;
+				
+				import org.assertj.swing.edt.FailOnThreadViolationRepaintManager;
+				import org.assertj.swing.edt.GuiActionRunner;
+				import org.assertj.swing.fixture.FrameFixture;
+				import org.assertx.swing.tests.ExampleJFrame;
+				import org.junit.After;
+				import org.junit.Before;
+				import org.junit.BeforeClass;
+				
+				@SuppressWarnings("all")
+				public class Prova {
+				  private FrameFixture window;
+				  
+				  @BeforeClass
+				  public static void _beforeClass() {
+				    FailOnThreadViolationRepaintManager.install();
+				  }
+				  
+				  @Before
+				  public void _setup() {
+				    ExampleJFrame frame = GuiActionRunner.execute(() -> new ExampleJFrame());
+				    this.window = new FrameFixture(frame);
+				  }
+				  
+				  @After
+				  public void _cleanUp() {
+				    this.window.cleanUp();
+				  }
+				}
+			'''.toString.assertEquals(singleGeneratedCode)
+		]
+	}
+
+	@Test
+	def void testMethodNamesCollisions() {
+		'''
+			def Prova testing «ExampleJFrame.canonicalName» {
+			
+			test 'first method' {}
+			
+			test 'first method' {}
+			
+			test 'First Method' {}
+			
+			test 'first Method' {}
+			
+			test 'firstMethod' {}
+			
+			test 'First è%#@ me]thod' {}
+			}
+		'''.assertCompilesTo('''
+			package MyFile;
+			
 			import org.assertj.swing.edt.FailOnThreadViolationRepaintManager;
 			import org.assertj.swing.edt.GuiActionRunner;
 			import org.assertj.swing.fixture.FrameFixture;
@@ -153,9 +213,10 @@ class AssertXSwingCompilationTest {
 			import org.junit.After;
 			import org.junit.Before;
 			import org.junit.BeforeClass;
+			import org.junit.Test;
 			
 			@SuppressWarnings("all")
-			public class MyFile {
+			public class Prova {
 			  private FrameFixture window;
 			  
 			  @BeforeClass
@@ -173,106 +234,126 @@ class AssertXSwingCompilationTest {
 			  public void _cleanUp() {
 			    this.window.cleanUp();
 			  }
+			  
+			  @Test
+			  public void firstMethod() {
+			  }
+			  
+			  @Test
+			  public void firstMethod_1_() {
+			  }
+			  
+			  @Test
+			  public void firstMethod_2_() {
+			  }
+			  
+			  @Test
+			  public void firstMethod_3_() {
+			  }
+			  
+			  @Test
+			  public void firstMethod_4_() {
+			  }
+			  
+			  @Test
+			  public void firstMethod_5_() {
+			  }
 			}
-			'''.toString.assertEquals(singleGeneratedCode)
-		]
-	}
-	
-	@Test
-	def void testMethodNamesCollisions(){
-		'''
-		testing «ExampleJFrame.canonicalName»
-		
-		test 'first method' {}
-		
-		test 'first method' {}
-		
-		test 'First Method' {}
-		
-		test 'first Method' {}
-		
-		test 'firstMethod' {}
-		
-		test 'First è%#@ me]thod' {}
-		'''.assertCompilesTo('''
-		import org.assertj.swing.edt.FailOnThreadViolationRepaintManager;
-		import org.assertj.swing.edt.GuiActionRunner;
-		import org.assertj.swing.fixture.FrameFixture;
-		import org.assertx.swing.tests.ExampleJFrame;
-		import org.junit.After;
-		import org.junit.Before;
-		import org.junit.BeforeClass;
-		import org.junit.Test;
-		
-		@SuppressWarnings("all")
-		public class MyFile {
-		  private FrameFixture window;
-		  
-		  @BeforeClass
-		  public static void _beforeClass() {
-		    FailOnThreadViolationRepaintManager.install();
-		  }
-		  
-		  @Before
-		  public void _setup() {
-		    ExampleJFrame frame = GuiActionRunner.execute(() -> new ExampleJFrame());
-		    this.window = new FrameFixture(frame);
-		  }
-		  
-		  @After
-		  public void _cleanUp() {
-		    this.window.cleanUp();
-		  }
-		  
-		  @Test
-		  public void firstMethod() {
-		  }
-		  
-		  @Test
-		  public void firstMethod_1_() {
-		  }
-		  
-		  @Test
-		  public void firstMethod_2_() {
-		  }
-		  
-		  @Test
-		  public void firstMethod_3_() {
-		  }
-		  
-		  @Test
-		  public void firstMethod_4_() {
-		  }
-		  
-		  @Test
-		  public void firstMethod_5_() {
-		  }
-		}
 		''')
 	}
-	
+
 	@Test
-	def void testCustomFieldName(){
+	def void testCustomFieldName() {
 		'''
-		testing «ExampleJFrame.canonicalName» as field
-		
-		test 'method' {
-			field.textBox('textToCopy').deleteText
-		}
+			def Prova testing «ExampleJFrame.canonicalName» as field {
+			
+			test 'method' {
+				field.textBox('textToCopy').deleteText
+			}
+			}
 		'''.assertCompilesTo(
 			'''
+				package MyFile;
+				
+				import org.assertj.swing.edt.FailOnThreadViolationRepaintManager;
+				import org.assertj.swing.edt.GuiActionRunner;
+				import org.assertj.swing.fixture.FrameFixture;
+				import org.assertx.swing.tests.ExampleJFrame;
+				import org.junit.After;
+				import org.junit.Before;
+				import org.junit.BeforeClass;
+				import org.junit.Test;
+				
+				@SuppressWarnings("all")
+				public class Prova {
+				  private FrameFixture field;
+				  
+				  @BeforeClass
+				  public static void _beforeClass() {
+				    FailOnThreadViolationRepaintManager.install();
+				  }
+				  
+				  @Before
+				  public void _setup() {
+				    ExampleJFrame frame = GuiActionRunner.execute(() -> new ExampleJFrame());
+				    this.field = new FrameFixture(frame);
+				  }
+				  
+				  @After
+				  public void _cleanUp() {
+				    this.field.cleanUp();
+				  }
+				  
+				  @Test
+				  public void method() {
+				    this.field.textBox("textToCopy").deleteText();
+				  }
+				}
+			'''
+		)
+	}
+
+	@Test
+	def void testGeneratedClassNameAlwaysStartsWithUpperCase() {
+		val resourceset = resourceSet('lowerCaseFile.assertxs' -> '''
+			def Prova testing javax.swing.JFrame
+		''')
+
+		resourceset.compile [
+			val className = compiledClass.simpleName
+			val fullClassName = compiledClass.canonicalName
+			assertTrue(
+				"name of generated class '" + fullClassName + "' doesn't start with uppercase letter",
+				Character::isUpperCase(className.charAt(0))
+			)
+		]
+	}
+
+	@Test
+	def void testMatcherCompilesToInnerClass() {
+		'''
+			def Prova testing javax.swing.JFrame {
+			
+			def isEmptyLabel match javax.swing.JLabel {
+				it.getText.length == 0
+			}
+			}
+		'''.assertCompilesTo('''
+			package MyFile;
+			
+			import javax.swing.JFrame;
+			import javax.swing.JLabel;
+			import org.assertj.swing.core.GenericTypeMatcher;
 			import org.assertj.swing.edt.FailOnThreadViolationRepaintManager;
 			import org.assertj.swing.edt.GuiActionRunner;
 			import org.assertj.swing.fixture.FrameFixture;
-			import org.assertx.swing.tests.ExampleJFrame;
 			import org.junit.After;
 			import org.junit.Before;
 			import org.junit.BeforeClass;
-			import org.junit.Test;
 			
 			@SuppressWarnings("all")
-			public class MyFile {
-			  private FrameFixture field;
+			public class Prova {
+			  private FrameFixture window;
 			  
 			  @BeforeClass
 			  public static void _beforeClass() {
@@ -281,39 +362,201 @@ class AssertXSwingCompilationTest {
 			  
 			  @Before
 			  public void _setup() {
-			    ExampleJFrame frame = GuiActionRunner.execute(() -> new ExampleJFrame());
-			    this.field = new FrameFixture(frame);
+			    JFrame frame = GuiActionRunner.execute(() -> new JFrame());
+			    this.window = new FrameFixture(frame);
 			  }
 			  
 			  @After
 			  public void _cleanUp() {
-			    this.field.cleanUp();
+			    this.window.cleanUp();
+			  }
+			  
+			  private class IsEmptyLabel extends GenericTypeMatcher<JLabel> {
+			    public IsEmptyLabel() {
+			      super(JLabel.class);
+			    }
+			    
+			    @Override
+			    public boolean isMatching(final JLabel it) {
+			      int _length = it.getText().length();
+			      return (_length == 0);
+			    }
+			  }
+			}
+		''')
+	}
+
+	@Test
+	def void testMatcherUsage() {
+		'''
+			def Prova testing javax.swing.JFrame {
+			
+			test 'm' {
+				window.button(?isMatch?)
+				window.textBox(?noLabel?)
+			}
+			
+			def isMatch match javax.swing.JButton {
+				true
+			}
+			
+			def noLabel match javax.swing.JLabel {
+				false
+			}
+			}
+		'''.assertCompilesTo('''
+			package MyFile;
+			
+			import javax.swing.JButton;
+			import javax.swing.JFrame;
+			import javax.swing.JLabel;
+			import org.assertj.swing.core.GenericTypeMatcher;
+			import org.assertj.swing.edt.FailOnThreadViolationRepaintManager;
+			import org.assertj.swing.edt.GuiActionRunner;
+			import org.assertj.swing.fixture.FrameFixture;
+			import org.junit.After;
+			import org.junit.Before;
+			import org.junit.BeforeClass;
+			import org.junit.Test;
+			
+			@SuppressWarnings("all")
+			public class Prova {
+			  private FrameFixture window;
+			  
+			  @BeforeClass
+			  public static void _beforeClass() {
+			    FailOnThreadViolationRepaintManager.install();
+			  }
+			  
+			  @Before
+			  public void _setup() {
+			    JFrame frame = GuiActionRunner.execute(() -> new JFrame());
+			    this.window = new FrameFixture(frame);
+			  }
+			  
+			  @After
+			  public void _cleanUp() {
+			    this.window.cleanUp();
+			  }
+			  
+			  private class IsMatch extends GenericTypeMatcher<JButton> {
+			    public IsMatch() {
+			      super(JButton.class);
+			    }
+			    
+			    @Override
+			    public boolean isMatching(final JButton it) {
+			      return true;
+			    }
+			  }
+			  
+			  private class NoLabel extends GenericTypeMatcher<JLabel> {
+			    public NoLabel() {
+			      super(JLabel.class);
+			    }
+			    
+			    @Override
+			    public boolean isMatching(final JLabel it) {
+			      return false;
+			    }
 			  }
 			  
 			  @Test
-			  public void method() {
-			    this.field.textBox("textToCopy").deleteText();
+			  public void m() {
+			    IsMatch _isMatch = new IsMatch();
+			    this.window.button(_isMatch);
+			    NoLabel _noLabel = new NoLabel();
+			    this.window.textBox(_noLabel);
 			  }
 			}
-			'''
-		)
+		''')
+	}
+
+	@Test
+	def void testMatcherRefReuseExistingVariable() {
+		'''
+			def Prova testing javax.swing.JFrame {
+			
+			def aMatch match javax.swing.JLabel {
+				false
+			}
+			
+			test 'm' {
+				window.label(?aMatch?)
+				window.label(?aMatch?)
+			}
+			}
+		'''.assertCompilesTo('''
+			package MyFile;
+			
+			import javax.swing.JFrame;
+			import javax.swing.JLabel;
+			import org.assertj.swing.core.GenericTypeMatcher;
+			import org.assertj.swing.edt.FailOnThreadViolationRepaintManager;
+			import org.assertj.swing.edt.GuiActionRunner;
+			import org.assertj.swing.fixture.FrameFixture;
+			import org.junit.After;
+			import org.junit.Before;
+			import org.junit.BeforeClass;
+			import org.junit.Test;
+			
+			@SuppressWarnings("all")
+			public class Prova {
+			  private FrameFixture window;
+			  
+			  @BeforeClass
+			  public static void _beforeClass() {
+			    FailOnThreadViolationRepaintManager.install();
+			  }
+			  
+			  @Before
+			  public void _setup() {
+			    JFrame frame = GuiActionRunner.execute(() -> new JFrame());
+			    this.window = new FrameFixture(frame);
+			  }
+			  
+			  @After
+			  public void _cleanUp() {
+			    this.window.cleanUp();
+			  }
+			  
+			  private class AMatch extends GenericTypeMatcher<JLabel> {
+			    public AMatch() {
+			      super(JLabel.class);
+			    }
+			    
+			    @Override
+			    public boolean isMatching(final JLabel it) {
+			      return false;
+			    }
+			  }
+			  
+			  @Test
+			  public void m() {
+			    AMatch _aMatch = new AMatch();
+			    this.window.label(_aMatch);
+			    this.window.label(_aMatch);
+			  }
+			}
+		''')
 	}
 
 //	@Test
-	//doesn't work, i don't know why, it simply doesn't run the tests of the compiled class
-	//NOTE: it was actually an error in the inferrer, the @BeforeClass was not set to be 
-	//static, so tests wouldn't run
-	//TODO: move this test somewhere else, since it cannot be run headlessly
+	// doesn't work, i don't know why, it simply doesn't run the tests of the compiled class
+	// NOTE: it was actually an error in the inferrer, the @BeforeClass was not set to be 
+	// static, so tests wouldn't run
+	// TODO: move this test somewhere else, since it cannot be run headlessly
 	// and seems more like an heavy integration test
 	def void testJUnitTestCaseInstantiation() {
 		'''
-			testing «ExampleJFrame.canonicalName»
+			def Prova testing «ExampleJFrame.canonicalName» {
 			
 			test 'First test' {
 				window.textBox('textToCopy').deleteText
 				window.textBox('textToCopy').enterText('Hello!')
 				window.button('copyButton').click
 				window.label('copiedText').requireText('Hello!')
+			}
 			}
 		'''.compile [
 			val result = JUnitCore.runClasses(compiledClass)

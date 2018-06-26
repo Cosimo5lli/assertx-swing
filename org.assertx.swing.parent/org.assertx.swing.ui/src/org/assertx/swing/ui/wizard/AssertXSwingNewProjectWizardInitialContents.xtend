@@ -18,11 +18,13 @@ class AssertXSwingNewProjectWizardInitialContents {
 				/*
 				 * This is an example test case
 				 */
-				testing javax.swing.JFrame
-				
-				test 'Hello!' {
+				def Example testing javax.swing.JFrame {
 					
+					test 'Hello!' {
+						
+					}
 				}
+				
 			'''
 		)
 	}
