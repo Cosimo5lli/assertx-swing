@@ -25,4 +25,4 @@ before_script:
  - sh -e /etc/init.d/xvfb start
 
 script:
- - mvn -f org.assertx.swing.parent/pom.xml clean verify -Pjacoco sonar:sonar
+ - mvn -f org.assertx.swing.parent/pom.xml clean verify -Pjacoco coveralls:report sonar:sonar
