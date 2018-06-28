@@ -29,34 +29,56 @@ class AssertXSwingLabelProvider extends XbaseLabelProvider {
 	}
 
 	def text(AXSTestMethod tm) {
-		new StyledString(tm.name).append(
-			new StyledString(' : Test', StyledString.DECORATIONS_STYLER)
-		)
+		new StyledString(tm.name)
 	}
 
 	def text(AXSSettings s) {
-		new StyledString('Settings', StyledString.DECORATIONS_STYLER)
+		new StyledString('Settings')
 	}
 
 	def text(AXSMatcher matcher) {
 		new StyledString(matcher.name).append(
-			new StyledString(' : Matcher', StyledString.DECORATIONS_STYLER)
+			matcher.typeRef.getStyledText
 		)
 	}
 
 	def text(AXSTestCase tc) {
 		new StyledString(tc.name).append(
-			new StyledString(' : Test Case', StyledString.DECORATIONS_STYLER)
+			tc.typeRef.getStyledText
 		)
 	}
 
 	def text(JvmParameterizedTypeReference ref) {
-		new StyledString(ref.checkedTypeRefName, StyledString.COUNTER_STYLER)
+		new StyledString(' : ' + ref.checkedTypeRefName, StyledString.DECORATIONS_STYLER)
 	}
 
 	def text(String s) {
 		new StyledString(s.substring(0, s.indexOf(':'))).append(
 			new StyledString(s.substring(s.indexOf(':')), StyledString.DECORATIONS_STYLER)
 		)
+	}
+
+	def image(AXSTestMethod tm) {
+		'methpub_obj.gif'
+	}
+
+	def image(AXSMatcher m) {
+		'methpro_obj.gif'
+	}
+
+	def image(AXSSettings s) {
+		'field_public_obj.gif'
+	}
+
+	def image(AXSFile f) {
+		'package_obj.gif'
+	}
+
+	def image(AXSTestCase tc) {
+		'test_case.gif'
+	}
+
+	def image(String s) {
+		s
 	}
 }

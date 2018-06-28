@@ -35,23 +35,18 @@ class AssertXSwingOutlineTreeProvider extends DefaultOutlineTreeProvider {
 		true
 	}
 
-	def _createChildren(IOutlineNode parentNode, AXSTestCase tc) {
+	def _isLeaf(AXSMatcher m) {
+		true
+	}
 
-		createEStructuralFeatureNode(
-			parentNode,
-			tc,
-			AssertXSwingPackage.eINSTANCE.AXSDefinable_TypeRef,
-			labelProvider.getImage('parameter.gif'),
-			labelProvider.getText(tc.typeRef),
-			true
-		)
+	def _createChildren(IOutlineNode parentNode, AXSTestCase tc) {
 
 		val node = createEStructuralFeatureNode(
 			parentNode,
 			tc,
 			AssertXSwingPackage.eINSTANCE.AXSTestCase_FieldName,
-			labelProvider.getImage('field_private_obj.gif'),
-			labelProvider.getText(tc.checkedFieldName + ' : ' + tc.fieldType?.simpleName),
+			getImage('field_private_obj.gif'),
+			getText(tc.checkedFieldName + ' : ' + tc.fieldType?.simpleName),
 			true
 		)
 
@@ -61,16 +56,8 @@ class AssertXSwingOutlineTreeProvider extends DefaultOutlineTreeProvider {
 			-1
 		)
 
-		if (tc.settings !== null) {
-			createNode(parentNode, tc.settings)
-		}
-
-		for (test : tc.tests) {
-			createNode(parentNode, test)
-		}
-
-		for (matcher : tc.matchers) {
-			createNode(parentNode, matcher)
+		for (member : tc.members) {
+			createNode(parentNode, member)
 		}
 	}
 
@@ -80,8 +67,8 @@ class AssertXSwingOutlineTreeProvider extends DefaultOutlineTreeProvider {
 			parentNode,
 			matcher,
 			AssertXSwingPackage.eINSTANCE.AXSDefinable_TypeRef,
-			labelProvider.getImage(matcher.typeRef),
-			labelProvider.getText(matcher.typeRef),
+			matcher.typeRef.getImage,
+			matcher.typeRef.getText,
 			true
 		)
 
@@ -94,29 +81,33 @@ class AssertXSwingOutlineTreeProvider extends DefaultOutlineTreeProvider {
 				rootNode,
 				file,
 				AssertXSwingPackage.eINSTANCE.AXSFile_PackName,
-				labelProvider.getImage(file),
+				file.getImage,
 				file.packName,
 				true
 			)
 		}
-		
-		if(file.imports !== null){
+
+		if (file.imports !== null) {
 			createEStructuralFeatureNode(
 				rootNode,
 				file.imports,
 				XtypePackage.eINSTANCE.XImportSection_ImportDeclarations,
-				labelProvider.getImage(file.imports),
-				labelProvider.getText(file.imports),
+				file.imports.getImage,
+				file.imports.getText,
 				false
 			)
 		}
 
-		for (testCase : file.testCases) {
-			createNode(rootNode, testCase)
+		for (definition : file.definitions) {
+			createNode(rootNode, definition)
 		}
+	}
 
-		for (matcher : file.matchers) {
-			createNode(rootNode, matcher)
-		}
+	def getImage(Object o) {
+		imageDispatcher.invoke(o)
+	}
+
+	def getText(Object o) {
+		textDispatcher.invoke(o)
 	}
 }
