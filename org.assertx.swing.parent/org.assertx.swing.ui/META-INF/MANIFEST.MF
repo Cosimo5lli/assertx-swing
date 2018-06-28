@@ -29,3 +29,4 @@ Export-Package: org.assertx.swing.ui.contentassist,
  org.assertx.swing.ui.quickfix,
  org.assertx.swing.ui.wizard
 Bundle-Activator: org.assertx.swing.ui.internal.SwingActivator
+Automatic-Module-Name: org.assertx.swing.ui
