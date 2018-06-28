@@ -25,4 +25,7 @@ before_script:
  - sh -e /etc/init.d/xvfb start
 
 script:
- - mvn -f org.assertx.swing.parent/pom.xml clean verify -Pjacoco coveralls:report sonar:sonar
+# jacoco profile enable the generation of coverage reports
+# sonar-analysis profile is used to configure xtend compiler to not generate SuppressWarnings("All") annotation,
+# that prevents Sonarqube analysis
+ - mvn -f org.assertx.swing.parent/pom.xml clean verify -Pjacoco,sonar-analysis coveralls:report sonar:sonar
