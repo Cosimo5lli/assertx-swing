@@ -34,3 +34,4 @@ Export-Package: org.assertx.swing,
  org.assertx.swing.validation
 Import-Package: org.apache.log4j
 Bundle-ClassPath: .
+Automatic-Module-Name: org.assertx.swing
