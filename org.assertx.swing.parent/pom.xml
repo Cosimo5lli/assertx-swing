@@ -139,6 +139,17 @@
 					</environments>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>org.eluder.coveralls</groupId>
+				<artifactId>coveralls-maven-plugin</artifactId>
+				<version>4.3.0</version>
+				<configuration>
+					<jacocoReports>
+						<!-- by default Jacoco generates its report here -->
+						<jacocoReport>${project.basedir}/../org.assertx.swing.tests.report/target/site/jacoco-aggregate/jacoco.xml</jacocoReport>
+					</jacocoReports>
+				</configuration>
+			</plugin>
 		</plugins>
 		<pluginManagement>
 			<plugins>
