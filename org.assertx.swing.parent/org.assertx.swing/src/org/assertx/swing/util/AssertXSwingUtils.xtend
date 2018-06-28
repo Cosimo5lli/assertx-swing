@@ -26,20 +26,11 @@ class AssertXSwingUtils {
 	}
 
 	def toLightweightTypeRef(JvmParameterizedTypeReference typeRef) {
-		if(typeRef?.type === null) return null
+		if(typeRef === null || typeRef.type === null) return null
 
-		val owner = if (typeRef !== null) {
-				new StandardTypeReferenceOwner(services, typeRef)
-			} else
-				return null
-		val factory = if (owner !== null) {
-				new LightweightTypeReferenceFactory(owner, false)
-			} else
-				return null
-		if (factory !== null) {
-			return factory.toLightweightReference(typeRef.type)
-		} else
-			return null
+		val owner = new StandardTypeReferenceOwner(services, typeRef)
+		val factory = new LightweightTypeReferenceFactory(owner, false)
+		return factory.toLightweightReference(typeRef.type)
 	}
 
 }
