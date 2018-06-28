@@ -13,7 +13,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
-		<sonar.language>java</sonar.language>
+		<!-- <sonar.language>java</sonar.language> -->
 		<!-- Always refer to the corresponding tests project (if it exists) otherwise 
 			Sonarqube won't be able to collect code coverage. For example, when analyzing 
 			project foo it wouldn't find code coverage information if it doesn't use 
@@ -42,7 +42,9 @@
 			**/*Activator.java
 		</sonar.tests.exclusions>
 		<!-- <sonar.coverage.exclusions>${sonar.exclusions}</sonar.coverage.exclusions> -->
-		<!-- <ant.directory>${assertx.swing.basedir}/ant</ant.directory> -->
+		<!--normal behaviour is to generate SuppressWarnings("All") annotations when compiling 
+			xtend sources -->
+		<generateSuppressWarnings>true</generateSuppressWarnings>
 	</properties>
 
 	<modules>
@@ -58,6 +60,19 @@
 		<module>org.assertx.swing.tests.examplewindow</module>
 		<module>org.assertx.swing.tests.report</module>
 	</modules>
+
+	<profiles>
+		<profile>
+			<id>sonar-analysis</id>
+			<activation>
+				<activeByDefault>false</activeByDefault>
+			</activation>
+			<properties>
+				<!-- when we want to analyze the project with Sonarqube we need this off -->
+				<generateSuppressWarnings>false</generateSuppressWarnings>
+			</properties>
+		</profile>
+	</profiles>
 
 	<build>
 		<plugins>
@@ -168,6 +183,9 @@
 						</execution>
 					</executions>
 					<configuration>
+						<!-- whether or not generate SuppressWarnings("All") annotations when 
+							compiling xtend sources -->
+						<generateSyntheticSuppressWarnings>${generateSuppressWarnings}</generateSyntheticSuppressWarnings>
 						<outputDirectory>${basedir}/xtend-gen</outputDirectory>
 						<testOutputDirectory>${basedir}/xtend-gen</testOutputDirectory>
 					</configuration>
