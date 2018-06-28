@@ -146,7 +146,7 @@
 				<configuration>
 					<jacocoReports>
 						<!-- by default Jacoco generates its report here -->
-						<jacocoReport>${project.basedir}/../org.assertx.swing.tests.report/target/site/jacoco-aggregate/jacoco.xml</jacocoReport>
+						<jacocoReport>${project.basedir}/org.assertx.swing.tests.report/target/site/jacoco-aggregate/jacoco.xml</jacocoReport>
 					</jacocoReports>
 				</configuration>
 			</plugin>
