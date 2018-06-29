@@ -74,10 +74,9 @@ class AssertXSwingContentAssistTest extends AbstractContentAssistTest {
 			'typeof', 'val', 'var', 'wait', 'wait()', 'wait()', 'while', 'window')
 	}
 
-//	@Test
-//	TODO: Understand why it proposes "Prova"
+	@Test
 	def void testClassUnderTestCompletion() {
-		newBuilder.withDirtyState.append('''
+		newBuilder.append('''
 			def Prova testing <|>
 		''').assertTextAtCursorIndicator('javax.swing.JDialog', 'javax.swing.JFrame')
 	}
