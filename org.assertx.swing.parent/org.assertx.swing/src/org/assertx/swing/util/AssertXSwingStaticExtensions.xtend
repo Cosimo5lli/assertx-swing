@@ -2,6 +2,7 @@ package org.assertx.swing.util
 
 import java.util.HashMap
 import java.util.List
+import java.util.Map
 import org.assertx.swing.assertXSwing.AXSDefinable
 import org.assertx.swing.assertXSwing.AXSFile
 import org.assertx.swing.assertXSwing.AXSMatcher
@@ -15,6 +16,10 @@ import org.eclipse.xtext.common.types.JvmParameterizedTypeReference
 
 class AssertXSwingStaticExtensions {
 
+	private new() {
+		// just a utility class
+	}
+
 	def static getCheckedFieldName(AXSTestCase tc) {
 		tc.fieldName ?: 'window'
 	}
@@ -22,8 +27,8 @@ class AssertXSwingStaticExtensions {
 	def static getCheckedTypeRefName(AXSTestCase tc) {
 		tc.typeRef.checkedTypeRefName
 	}
-	
-	def static getCheckedTypeRefName(JvmParameterizedTypeReference ref){
+
+	def static getCheckedTypeRefName(JvmParameterizedTypeReference ref) {
 		ref?.simpleName ?: Void.TYPE.simpleName
 	}
 
@@ -33,7 +38,7 @@ class AssertXSwingStaticExtensions {
 
 	def static removeOtherSettingsAndKeepThisOne(AXSSettings settings) {
 		val testCase = EcoreUtil2.getContainerOfType(settings, AXSTestCase)
-		testCase.members.removeIf[it instanceof AXSSettings && !(settings === it)]
+		testCase.members.removeIf[it instanceof AXSSettings && settings !== it]
 	}
 
 	def static getAllSettings(AXSTestCase tc) {
@@ -60,7 +65,7 @@ class AssertXSwingStaticExtensions {
 		m.name.toFirstUpper
 	}
 
-	def static getCamelCaseMethodsNamesMappings(AXSTestCase tc) {
+	def static Map<AXSTestMethod, String> getCamelCaseMethodsNamesMappings(AXSTestCase tc) {
 		val methodsNamesMappings = newHashMap
 		val collisions = newHashMap
 		for (test : tc.tests) {

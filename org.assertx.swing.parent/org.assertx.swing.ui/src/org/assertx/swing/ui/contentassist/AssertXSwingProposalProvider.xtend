@@ -10,13 +10,12 @@ import javax.swing.JDialog
 import javax.swing.JFrame
 import org.assertx.swing.assertXSwing.AXSMatcher
 import org.assertx.swing.assertXSwing.AXSTestCase
-import org.assertx.swing.assertXSwing.AssertXSwingPackage
 import org.eclipse.emf.ecore.EObject
-import org.eclipse.emf.ecore.EReference
 import org.eclipse.jface.text.contentassist.ICompletionProposal
 import org.eclipse.xtext.Assignment
 import org.eclipse.xtext.EcoreUtil2
 import org.eclipse.xtext.common.types.JvmType
+import org.eclipse.xtext.common.types.TypesPackage
 import org.eclipse.xtext.common.types.access.IJvmTypeProvider
 import org.eclipse.xtext.common.types.xtext.ui.ITypesProposalProvider.Filter
 import org.eclipse.xtext.common.types.xtext.ui.TypeMatchFilters
@@ -27,7 +26,6 @@ import org.eclipse.xtext.ui.editor.contentassist.ICompletionProposalAcceptor
 import org.eclipse.xtext.ui.editor.contentassist.ReplacementTextApplier
 
 import static extension org.assertx.swing.util.AssertXSwingStaticExtensions.*
-import org.eclipse.xtext.common.types.TypesPackage
 
 /**
  * See https://www.eclipse.org/Xtext/documentation/304_ide_concepts.html#content-assist
@@ -54,19 +52,16 @@ class AssertXSwingProposalProvider extends AbstractAssertXSwingProposalProvider 
 				val typeProvider = typeProviderFactory.createTypeProvider(model.eResource.resourceSet)
 
 				val jFrameType = typeProvider.findTypeByName(JFrame.name)
-				createSubTypeProposal(jFrameType, context, AssertXSwingPackage.eINSTANCE.AXSDefinable_TypeRef,
-					acceptor, filter)
+				createSubTypeProposal(jFrameType, context, acceptor, filter)
 
 				val jDialogType = typeProvider.findTypeByName(JDialog.name)
-				createSubTypeProposal(jDialogType, context, AssertXSwingPackage.eINSTANCE.AXSDefinable_TypeRef,
-					acceptor, filter)
+				createSubTypeProposal(jDialogType, context, acceptor, filter)
 			}
 			AXSMatcher: {
 				val typeProvider = typeProviderFactory.createTypeProvider(model.eResource.resourceSet)
 
 				val awtComponentType = typeProvider.findTypeByName(Component.name)
-				createSubTypeProposal(awtComponentType, context, AssertXSwingPackage.eINSTANCE.AXSDefinable_TypeRef,
-					acceptor)
+				createSubTypeProposal(awtComponentType, context, acceptor)
 			}
 			default:
 				super.completeJvmParameterizedTypeReference_Type(model, assignment, context, acceptor)
@@ -91,7 +86,7 @@ class AssertXSwingProposalProvider extends AbstractAssertXSwingProposalProvider 
 		super.completeXMemberFeatureCall_Feature(model, assignment, context, new FeatureCallDelegate(acceptor, model))
 	}
 
-	private def void createSubTypeProposal(JvmType jvmType, ContentAssistContext context, EReference reference,
+	private def void createSubTypeProposal(JvmType jvmType, ContentAssistContext context,
 		ICompletionProposalAcceptor acceptor, Filter... additionalFilters) {
 
 		val filters = newArrayList(TypeMatchFilters.public, TypeMatchFilters.canInstantiate,
