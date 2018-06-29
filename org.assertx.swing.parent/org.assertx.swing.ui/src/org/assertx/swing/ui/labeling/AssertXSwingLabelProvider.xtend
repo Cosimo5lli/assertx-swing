@@ -59,27 +59,15 @@ class AssertXSwingLabelProvider extends XbaseLabelProvider {
 		)
 	}
 
-	def image(AXSTestMethod tm) {
-		'methpub_obj.gif'
-	}
-
-	def image(AXSMatcher m) {
-		'methpro_obj.gif'
-	}
-
-	def image(AXSSettings s) {
-		'field_public_obj.gif'
-	}
-
-	def image(AXSFile f) {
-		'package_obj.gif'
-	}
-
-	def image(AXSTestCase tc) {
-		'test_case.gif'
-	}
-
-	def image(String s) {
-		s
+	override doGetImage(Object element) {
+		switch element {
+			AXSFile: 'package_obj.gif'
+			AXSTestCase: 'test_case.gif'
+			AXSMatcher: 'methpro_obj.gif'
+			AXSTestMethod: 'methpub_obj.gif'
+			AXSSettings: 'field_public_obj.gif'
+			String: element
+			default: super.doGetImage(element)
+		}
 	}
 }
