@@ -254,6 +254,7 @@
 						</execution>
 					</executions>
 					<configuration>
+					    <xtendAsPrimaryDebugSource>true</xtendAsPrimaryDebugSource>
 						<!-- whether or not generate SuppressWarnings("All") annotations when 
 							compiling xtend sources -->
 						<generateSyntheticSuppressWarnings>${generateSuppressWarnings}</generateSyntheticSuppressWarnings>
