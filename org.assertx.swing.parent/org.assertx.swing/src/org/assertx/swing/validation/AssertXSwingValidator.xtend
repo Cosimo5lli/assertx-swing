@@ -184,8 +184,8 @@ class AssertXSwingValidator extends AbstractAssertXSwingValidator {
 		)
 	}
 
-	private def <T1 extends AXSNamed, T2 extends AXSNamed> filterInMultimap(Iterable<? extends AXSNamed> list,
-		Class<T1> type1, Class<T2> type2) {
+	private def <T1 extends AXSNamed, T2 extends AXSNamed> Map<Class<? extends AXSNamed>, HashMultimap<String, ? extends AXSNamed>> filterInMultimap(
+		Iterable<? extends AXSNamed> list, Class<T1> type1, Class<T2> type2) {
 		val firstTypes = HashMultimap.create
 		val secondTypes = HashMultimap.create
 
@@ -196,8 +196,6 @@ class AssertXSwingValidator extends AbstractAssertXSwingValidator {
 				secondTypes.put(element.name, (element as T2))
 			}
 		}
-		val Map<Class<? extends AXSNamed>, HashMultimap<String, ? extends AXSNamed>> result = #{type1 -> firstTypes,
-			type2 -> secondTypes}
-		return result
+		#{type1 -> firstTypes, type2 -> secondTypes}
 	}
 }
