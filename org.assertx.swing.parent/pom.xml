@@ -42,7 +42,7 @@
 		<generateSuppressWarnings>true</generateSuppressWarnings>
 
 		<!-- configuring sonarqube's rules to be deactivated -->
-		<sonar.issue.ignore.multicriteria>e1,e2,e3,e4,e5,e6,e7,e8,e9,e10,e11,e12,e13,e14,e15</sonar.issue.ignore.multicriteria>
+		<sonar.issue.ignore.multicriteria>e1,e2,e3,e4,e5,e6,e7,e8,e9,e10,e11,e12,e13,e14,e15,e16,e17,e18,e19,e20</sonar.issue.ignore.multicriteria>
 
 		<!-- deep inheritance is due to the use of the xtext framework, nothing 
 			I can change -->
@@ -72,6 +72,12 @@
 			from Xtend -->
 		<sonar.issue.ignore.multicriteria.e5.ruleKey>squid:S1612</sonar.issue.ignore.multicriteria.e5.ruleKey>
 		<sonar.issue.ignore.multicriteria.e5.resourceKey>**/xtend-gen/**/*.java</sonar.issue.ignore.multicriteria.e5.resourceKey>
+
+		<!-- Field names should comply with a naming convention: I disable this 
+			for every Java file compiled from Xtend surces due to the fact that @Extension 
+			field are given a name that starts with _ -->
+		<sonar.issue.ignore.multicriteria.e20.ruleKey>squid:S00116</sonar.issue.ignore.multicriteria.e20.ruleKey>
+		<sonar.issue.ignore.multicriteria.e20.resourceKey>**/xtend-gen/**/*.java</sonar.issue.ignore.multicriteria.e20.resourceKey>
 
 		<!-- Cognitive Complexity of methods should not be too high: in this classes 
 			is caused by the dispatch methods compilation -->
@@ -115,6 +121,20 @@
 			name have to start with _ for working with the xtext framework -->
 		<sonar.issue.ignore.multicriteria.e10.ruleKey>squid:S00100</sonar.issue.ignore.multicriteria.e10.ruleKey>
 		<sonar.issue.ignore.multicriteria.e10.resourceKey>**/AssertXSwingJvmModelInferrer.java</sonar.issue.ignore.multicriteria.e10.resourceKey>
+
+		<sonar.issue.ignore.multicriteria.e16.ruleKey>squid:S00100</sonar.issue.ignore.multicriteria.e16.ruleKey>
+		<sonar.issue.ignore.multicriteria.e16.resourceKey>**/AssertXSwingFormatter.java</sonar.issue.ignore.multicriteria.e16.resourceKey>
+
+		<sonar.issue.ignore.multicriteria.e17.ruleKey>squid:S00100</sonar.issue.ignore.multicriteria.e17.ruleKey>
+		<sonar.issue.ignore.multicriteria.e17.resourceKey>**/AssertXSwingTypeComputer.java</sonar.issue.ignore.multicriteria.e17.resourceKey>
+
+		<sonar.issue.ignore.multicriteria.e18.ruleKey>squid:S00100</sonar.issue.ignore.multicriteria.e18.ruleKey>
+		<sonar.issue.ignore.multicriteria.e18.resourceKey>**/AssertXSwingOutlineTreeProvider.java</sonar.issue.ignore.multicriteria.e18.resourceKey>
+
+		<!-- Unused method parameters should be removed: in this classes they are 
+			necessary for method dispatching -->
+		<sonar.issue.ignore.multicriteria.e19.ruleKey>squid:S00100</sonar.issue.ignore.multicriteria.e19.ruleKey>
+		<sonar.issue.ignore.multicriteria.e19.resourceKey>**/AssertXSwingOutlineTreeProvider.java</sonar.issue.ignore.multicriteria.e19.resourceKey>
 	</properties>
 
 	<modules>
