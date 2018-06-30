@@ -50,6 +50,20 @@ class AssertXSwingContentAssistTest extends AbstractContentAssistTest {
 	}
 	
 	@Test
+	def void testEmptyFile(){
+		newBuilder.assertText('def', 'import', 'package')
+	}
+	
+	@Test
+	def void testCompletionAfterATestCase(){
+		newBuilder.append('''
+		def Prova testing javax.swing.JFrame {}
+		
+		
+		''').assertText('def')
+	}
+	
+	@Test
 	def void testCompletionInEmptyTestMethodBody() {
 		newBuilder.withDirtyState.append('''
 			def Prova testing javax.swing.JFrame {
@@ -82,8 +96,8 @@ class AssertXSwingContentAssistTest extends AbstractContentAssistTest {
 	}
 
 	@Test
-	def void testMethodCompletion() {
-		newBuilder.withDirtyState.append('''
+	def void testMethodCompletionNotProposingPrivateGeneratedMethods() {
+		newBuilder.append('''
 			def Prova testing javax.swing.JFrame {
 			
 				test 'my method' {
