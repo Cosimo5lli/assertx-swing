@@ -61,19 +61,6 @@ class AssertXSwingOutlineTreeProvider extends DefaultOutlineTreeProvider {
 		}
 	}
 
-	def _createChildren(IOutlineNode parentNode, AXSMatcher matcher) {
-
-		createEStructuralFeatureNode(
-			parentNode,
-			matcher,
-			AssertXSwingPackage.eINSTANCE.AXSDefinable_TypeRef,
-			matcher.typeRef.getImage,
-			matcher.typeRef.getText,
-			true
-		)
-
-	}
-
 	def _createChildren(DocumentRootNode rootNode, AXSFile file) {
 
 		if (file.packName !== null) {
