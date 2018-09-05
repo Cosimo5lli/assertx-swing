@@ -6,7 +6,6 @@ import java.util.Map
 import org.assertx.swing.assertXSwing.AXSDefinable
 import org.assertx.swing.assertXSwing.AXSFile
 import org.assertx.swing.assertXSwing.AXSMatcher
-import org.assertx.swing.assertXSwing.AXSMatcherRef
 import org.assertx.swing.assertXSwing.AXSSettings
 import org.assertx.swing.assertXSwing.AXSTestCase
 import org.assertx.swing.assertXSwing.AXSTestMethod
@@ -55,10 +54,6 @@ class AssertXSwingStaticExtensions {
 
 	def static getMatchers(AXSTestCase tc) {
 		tc.members.filter(AXSMatcher)
-	}
-
-	def static getTypeName(AXSMatcherRef ref) {
-		ref.reference.typeName
 	}
 
 	def static getTypeName(AXSMatcher m) {
@@ -130,9 +125,5 @@ class AssertXSwingStaticExtensions {
 
 	def static getTestCases(AXSFile file) {
 		file.definitions.filter(AXSTestCase)
-	}
-
-	def static getMatchers(AXSFile file) {
-		file.definitions.filter(AXSMatcher)
 	}
 }
