@@ -31,7 +31,7 @@ class AssertXSwingOutlineTest extends AbstractOutlineTest {
 	}
 
 	@Test
-	def void testOnlyTestedClass() {
+	def void testTestCaseWithJustTestedClassType() {
 		'''
 			def Prova testing javax.swing.JFrame {}
 		'''.assertAllLabels('''
