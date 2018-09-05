@@ -7,7 +7,6 @@ import org.eclipse.xtext.util.JavaVersion
 import org.eclipse.xtext.xbase.testing.CompilationTestHelper
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.JUnitCore
 import org.junit.runner.RunWith
 
 import static extension org.junit.Assert.*
@@ -541,27 +540,9 @@ class AssertXSwingCompilationTest {
 		''')
 	}
 
-//	@Test
-	// doesn't work, i don't know why, it simply doesn't run the tests of the compiled class
-	// NOTE: it was actually an error in the inferrer, the @BeforeClass was not set to be 
-	// static, so tests wouldn't run
-	// TODO: move this test somewhere else, since it cannot be run headlessly
-	// and seems more like an heavy integration test
-	def void testJUnitTestCaseInstantiation() {
 		'''
-			def Prova testing «ExampleJFrame.canonicalName» {
 			
-			test 'First test' {
-				window.textBox('textToCopy').deleteText
-				window.textBox('textToCopy').enterText('Hello!')
-				window.button('copyButton').click
-				window.label('copiedText').requireText('Hello!')
 			}
 			}
-		'''.compile [
-			val result = JUnitCore.runClasses(compiledClass)
-			1.assertEquals(result.runCount)
-			assertTrue(result.wasSuccessful)
-		]
 	}
 }
