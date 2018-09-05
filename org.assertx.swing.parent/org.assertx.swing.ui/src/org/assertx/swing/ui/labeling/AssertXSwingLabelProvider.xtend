@@ -22,7 +22,7 @@ import static extension org.assertx.swing.util.AssertXSwingStaticExtensions.getC
  * See https://www.eclipse.org/Xtext/documentation/304_ide_concepts.html#label-provider
  */
 class AssertXSwingLabelProvider extends XbaseLabelProvider {
-	static val char SEPARETOR = ':'
+	static val char SEPARATOR = ':'
 
 	@Inject
 	new(AdapterFactoryLabelProvider delegate) {
@@ -54,8 +54,8 @@ class AssertXSwingLabelProvider extends XbaseLabelProvider {
 	}
 
 	def text(String s) {
-		new StyledString(s.substring(0, s.indexOf(SEPARETOR))).append(
-			new StyledString(s.substring(s.indexOf(SEPARETOR)), StyledString.DECORATIONS_STYLER)
+		new StyledString(s.substring(0, s.indexOf(SEPARATOR))).append(
+			new StyledString(s.substring(s.indexOf(SEPARATOR)), StyledString.DECORATIONS_STYLER)
 		)
 	}
 
