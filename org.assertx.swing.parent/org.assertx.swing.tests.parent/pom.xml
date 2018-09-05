@@ -49,22 +49,8 @@
 						</executions>
 						<configuration>
 							<excludes>
-								<exclude>**/*Smoke*.class</exclude>
-								<exclude>**/*Workbench*.class</exclude>
-								<exclude>**/*ImplicitlyImportedFeatures.class</exclude>
-								<exclude>**/AXSExtension.class</exclude>
-								<exclude>**/*Activator*</exclude>
-								<exclude>**/*RuntimeModule*</exclude>
-								<exclude>**/*StandaloneSetup*</exclude>
-								<exclude>**/*Internal*</exclude>
-								<exclude>**/*Sequencer*</exclude>
-								<exclude>**/*Abstract*</exclude>
-								<exclude>**/*GrammarAccess*</exclude>
-								<exclude>**/antlr/*.*</exclude>
-								<exclude>**/internal/*.*</exclude>
-								<exclude>**/*ExtensionFactory*</exclude>
-								<exclude>**/*UiModule*</exclude>
 								<exclude>**/AssertXSwingQuickfixProvider.*</exclude>
+								<exclude>**/src-gen/**</exclude>
 							</excludes>
 						</configuration>
 					</plugin>
