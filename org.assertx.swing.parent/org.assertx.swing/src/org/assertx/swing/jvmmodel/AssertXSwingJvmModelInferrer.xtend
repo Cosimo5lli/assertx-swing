@@ -93,14 +93,14 @@ class AssertXSwingJvmModelInferrer extends AbstractModelInferrer {
 						this.«SETTINGS_METHOD_NAME»(robot.settings());
 					«ENDIF»
 					«typeRef(testedClass)» frame = «typeRef(GuiActionRunner)».execute(() -> new «typeRef(testedClass)»());
-					«element.toFieldSelectinStatement» = new «typeRef(fixtureType)»(«if(element.settings !== null) 'robot, ' else ''»frame);
+					«element.toFieldSelectionStatement» = new «typeRef(fixtureType)»(«if(element.settings !== null) 'robot, ' else ''»frame);
 				'''
 			]
 
 			members += element.toMethod(AFTER_METHOD_NAME, typeRef(Void.TYPE)) [
 				annotations += annotationRef(After)
 				body = '''
-					«element.toFieldSelectinStatement».cleanUp();
+					«element.toFieldSelectionStatement».cleanUp();
 				'''
 			]
 
@@ -152,7 +152,7 @@ class AssertXSwingJvmModelInferrer extends AbstractModelInferrer {
 		}
 	}
 
-	def private toFieldSelectinStatement(AXSTestCase tc) {
+	def private toFieldSelectionStatement(AXSTestCase tc) {
 		'this.' + tc.checkedFieldName
 	}
 }

@@ -184,6 +184,32 @@ class AssertXSwingStaticExtensionsTest {
 	}
 
 	@Test
+	def void testNamesAreGeneratedWithoutCollisions() {
+		'''
+			def Test testing Object {
+				test 'my method' {}
+				test 'my method' {}
+				test 'My method' {}
+				test '***my ** Method' {}
+			}
+		'''.parse.definitions.head as AXSTestCase => [
+			assertNamesMappings('myMethod, myMethod_1_, myMethod_2_, myMethod_3_')
+		]
+	}
+	
+	@Test
+	def void testNamesMAppingsGenerationWithNullNames(){
+		'''
+		def Test testing Object {
+			test 'm'{}
+			test {}
+		}
+		'''.parse.definitions.head as AXSTestCase => [
+			assertNamesMappings('m, null')
+		]
+	}
+
+	@Test
 	def void testGeneratedMethodsListWithNullArgument() {
 		assertGeneratedMethods(null, '_beforeClass, _setup, _cleanUp, _beforeClass(), _setup(), _cleanUp()')
 	}
@@ -244,7 +270,6 @@ class AssertXSwingStaticExtensionsTest {
 			members.contains(settings).assertFalse
 			members.contains(test).assertTrue
 			members.contains(matcher).assertTrue
-
 		]
 	}
 
@@ -347,6 +372,15 @@ class AssertXSwingStaticExtensionsTest {
 			}
 		'''.parse.testCases.head.matchers.head.assertPackage
 	}
+	
+	@Test
+	def void testGetPackageWithDeclaredPackage(){
+		'''
+		package Test
+		
+		def Prova testing Object {}
+		'''.parse.definitions.head.assertPackage('Test.__synthetic0')
+	}
 
 	@Test
 	def void testGetQualifiedNameOnTestCase() {
@@ -398,13 +432,38 @@ class AssertXSwingStaticExtensionsTest {
 		]
 	}
 
+	@Test
+	def void testGetTypeNameOnMatcher_1() {
+		'''
+			def matcher match Object {}
+		'''.parse.definitions => [
+			'Matcher'.assertEquals((head as AXSMatcher).typeName)
+		]
+	}
+
+	@Test
+	def void testGetTypeNameOnMatcher_2() {
+		'''
+			def Test testing Object {
+				def matcher match Object {}
+			}
+		'''.parse.definitions => [
+			val tc = head as AXSTestCase
+			'Matcher'.assertEquals((tc.members.head as AXSMatcher).typeName)
+		]
+	}
+
 	def void assertQualifiedName(AXSDefinable definable) {
 		'__synthetic0.Test'.assertEquals(definable.qualifiedName)
 	}
 
 	def void assertPackage(AXSDefinable definable) {
 		// the filename given by the ParseHelper
-		'__synthetic0'.assertEquals(definable.package)
+		definable.assertPackage('__synthetic0')
+	}
+
+	def void assertPackage(AXSDefinable definable, String expectedPackage){
+		expectedPackage.assertEquals(definable.package)
 	}
 
 	def private void assertGeneratedMethods(AXSTestCase testCase, String expected) {

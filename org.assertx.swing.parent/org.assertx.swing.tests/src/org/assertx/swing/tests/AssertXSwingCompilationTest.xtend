@@ -7,7 +7,6 @@ import org.eclipse.xtext.util.JavaVersion
 import org.eclipse.xtext.xbase.testing.CompilationTestHelper
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.JUnitCore
 import org.junit.runner.RunWith
 
 import static extension org.junit.Assert.*
@@ -541,27 +540,141 @@ class AssertXSwingCompilationTest {
 		''')
 	}
 
-//	@Test
-	// doesn't work, i don't know why, it simply doesn't run the tests of the compiled class
-	// NOTE: it was actually an error in the inferrer, the @BeforeClass was not set to be 
-	// static, so tests wouldn't run
-	// TODO: move this test somewhere else, since it cannot be run headlessly
-	// and seems more like an heavy integration test
-	def void testJUnitTestCaseInstantiation() {
+	@Test
+	def void testMatcherRefSyntheticVariableNameNeverCollides() {
 		'''
-			def Prova testing «ExampleJFrame.canonicalName» {
+			def Prova testing javax.swing.JFrame {
 			
-			test 'First test' {
-				window.textBox('textToCopy').deleteText
-				window.textBox('textToCopy').enterText('Hello!')
-				window.button('copyButton').click
-				window.label('copiedText').requireText('Hello!')
+			def aMatch match javax.swing.JLabel {
+				false
+			}
+			
+			test 'm' {
+				val _aMatch = null
+				window.label(?aMatch?)
 			}
 			}
-		'''.compile [
-			val result = JUnitCore.runClasses(compiledClass)
-			1.assertEquals(result.runCount)
-			assertTrue(result.wasSuccessful)
-		]
+		'''.assertCompilesTo('''
+			package MyFile;
+			
+			import javax.swing.JFrame;
+			import javax.swing.JLabel;
+			import org.assertj.swing.core.GenericTypeMatcher;
+			import org.assertj.swing.edt.FailOnThreadViolationRepaintManager;
+			import org.assertj.swing.edt.GuiActionRunner;
+			import org.assertj.swing.fixture.FrameFixture;
+			import org.junit.After;
+			import org.junit.Before;
+			import org.junit.BeforeClass;
+			import org.junit.Test;
+			
+			@SuppressWarnings("all")
+			public class Prova {
+			  private FrameFixture window;
+			  
+			  @BeforeClass
+			  public static void _beforeClass() {
+			    FailOnThreadViolationRepaintManager.install();
+			  }
+			  
+			  @Before
+			  public void _setup() {
+			    JFrame frame = GuiActionRunner.execute(() -> new JFrame());
+			    this.window = new FrameFixture(frame);
+			  }
+			  
+			  @After
+			  public void _cleanUp() {
+			    this.window.cleanUp();
+			  }
+			  
+			  private class AMatch extends GenericTypeMatcher<JLabel> {
+			    public AMatch() {
+			      super(JLabel.class);
+			    }
+			    
+			    @Override
+			    public boolean isMatching(final JLabel it) {
+			      return false;
+			    }
+			  }
+			  
+			  @Test
+			  public void m() {
+			    final Object _aMatch = null;
+			    AMatch _aMatch_1 = new AMatch();
+			    this.window.label(_aMatch_1);
+			  }
+			}
+		''')
+	}
+
+	@Test
+	def void testMatcherRefSyntheticVariableNameNeverCollides_2() {
+		'''
+			def Prova testing javax.swing.JFrame {
+			
+			def aMatch match javax.swing.JLabel {
+				false
+			}
+			
+			test 'm' {
+				window.label(?aMatch?)
+				val _aMatch = null
+			}
+			}
+		'''.assertCompilesTo('''
+			package MyFile;
+			
+			import javax.swing.JFrame;
+			import javax.swing.JLabel;
+			import org.assertj.swing.core.GenericTypeMatcher;
+			import org.assertj.swing.edt.FailOnThreadViolationRepaintManager;
+			import org.assertj.swing.edt.GuiActionRunner;
+			import org.assertj.swing.fixture.FrameFixture;
+			import org.junit.After;
+			import org.junit.Before;
+			import org.junit.BeforeClass;
+			import org.junit.Test;
+			
+			@SuppressWarnings("all")
+			public class Prova {
+			  private FrameFixture window;
+			  
+			  @BeforeClass
+			  public static void _beforeClass() {
+			    FailOnThreadViolationRepaintManager.install();
+			  }
+			  
+			  @Before
+			  public void _setup() {
+			    JFrame frame = GuiActionRunner.execute(() -> new JFrame());
+			    this.window = new FrameFixture(frame);
+			  }
+			  
+			  @After
+			  public void _cleanUp() {
+			    this.window.cleanUp();
+			  }
+			  
+			  private class AMatch extends GenericTypeMatcher<JLabel> {
+			    public AMatch() {
+			      super(JLabel.class);
+			    }
+			    
+			    @Override
+			    public boolean isMatching(final JLabel it) {
+			      return false;
+			    }
+			  }
+			  
+			  @Test
+			  public void m() {
+			    AMatch _aMatch = new AMatch();
+			    this.window.label(_aMatch);
+			    final Object _aMatch_1 = null;
+			  }
+			}
+		''')
 	}
 }
