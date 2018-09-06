@@ -65,6 +65,8 @@
 								<exclude>**/*ExtensionFactory*</exclude>
 								<exclude>**/*UiModule*</exclude>
 								<exclude>**/AssertXSwingQuickfixProvider.*</exclude>
+								<exclude>**/assertXSwing/impl/*.*</exclude>
+								<exclude>**/assertXSwing/util/*.*</exclude>
 							</excludes>
 						</configuration>
 					</plugin>
